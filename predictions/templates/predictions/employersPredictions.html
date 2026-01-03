@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ML Predictions - Employers - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>ML Predictions for Employers</h3>
+          <p>Leverage AI insights to improve your hiring and business strategies</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Content section Start --> 
+<section id="content" class="section-padding">
+  <div class="container">
+    <div class="row">
+      <!-- Benefits Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-gift"></i>
+          </div>
+          <h4>Benefits Recommendation</h4>
+          <p>Discover which benefits packages attract the best candidates for your roles.</p>
+          <button class="btn btn-common" data-toggle="modal" data-target="#benefitsModal">Recommend Benefits</button>
+        </div>
+      </div>
+      
+      <!-- Company Growth Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-bar-chart"></i>
+          </div>
+          <h4>Company Growth Forecast</h4>
+          <p>Predict your company's growth trajectory based on hiring patterns and market data.</p>
+          <button class="btn btn-common" data-toggle="modal" data-target="#companyGrowthModal">Forecast Growth</button>
+        </div>
+      </div>
+      
+      <!-- Revenue Growth Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-revenue"></i>
+          </div>
+          <h4>Revenue Growth Analysis</h4>
+          <p>Analyze potential revenue growth based on workforce expansion and market conditions.</p>
+          <button class="btn btn-common" data-toggle="modal" data-target="#revenueGrowthModal">Analyze Revenue</button>
+        </div>
+      </div>
+      
+      <!-- Campaign Conversion Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-target"></i>
+          </div>
+          <h4>Job Campaign Conversion</h4>
+          <p>Predict the success rate of your job postings and recruitment campaigns.</p>
+          <button class="btn btn-common" data-toggle="modal" data-target="#campaignModal">Predict Conversion</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content section End -->
+
+<!-- Modals for Each Prediction -->
+<!-- Benefits Prediction Modal -->
+<div class="modal fade" id="benefitsModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Benefits Recommendation</h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'predictions:employer_predictions' %}">
+          {% csrf_token %}
+          <input type="hidden" name="prediction_type" value="benefits">
+          {{ benefits_form.as_p }}
+          <button type="submit" class="btn btn-common">Predict</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add similar modals for other prediction types -->
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .box {
+    padding: 30px;
+    text-align: center;
+    border: 1px solid #e8ecf1;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+  }
+  
+  .box:hover {
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    transform: translateY(-5px);
+  }
+  
+  .box .icon {
+    font-size: 48px;
+    color: #4c40ed;
+    margin-bottom: 20px;
+  }
+  
+  .box h4 {
+    margin-bottom: 15px;
+  }
+</style>
+{% endblock %}

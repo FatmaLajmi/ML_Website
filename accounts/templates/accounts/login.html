@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Login - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>Login</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Content section Start --> 
+<section id="content" class="section-padding">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-5 col-md-6 col-xs-12">
+        <div class="page-login-form box">
+          <h3>Login to Your Account</h3>
+          
+          <form method="post" class="login-form">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+              <div class="input-icon">
+                <i class="lni-user"></i>
+                {{ form.username }}
+                {% if form.username.errors %}
+                <div class="invalid-feedback d-block">{{ form.username.errors }}</div>
+                {% endif %}
+              </div>
+            </div> 
+            
+            <div class="form-group">
+              <div class="input-icon">
+                <i class="lni-lock"></i>
+                {{ form.password }}
+                {% if form.password.errors %}
+                <div class="invalid-feedback d-block">{{ form.password.errors }}</div>
+                {% endif %}
+              </div>
+            </div> 
+            
+            <div class="form-group form-check">
+              <input type="checkbox" class="form-check-input" id="remember" name="remember">
+              <label class="form-check-label" for="remember">Keep Me Signed In</label>
+            </div>
+            
+            <button type="submit" class="btn btn-common log-btn">Login</button>
+          </form>
+          
+          <ul class="form-links">
+            <li class="text-center"><a href="{% url 'accounts:signup' %}">Don't have an account? Sign up here</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content section End -->
+{% endblock %}

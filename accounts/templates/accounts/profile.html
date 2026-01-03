@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>My Profile</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Content section Start --> 
+<section id="content" class="section-padding">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10 col-xs-12">
+        <div class="page-login-form box">
+          <h3>Update Your Profile</h3>
+          
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+              <label>Username</label>
+              <input type="text" class="form-control" value="{{ user.username }}" disabled>
+            </div>
+            
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" class="form-control" value="{{ user.email }}" disabled>
+            </div>
+            
+            <div class="form-group">
+              <label>Role</label>
+              <input type="text" class="form-control" value="{{ user.get_role_display }}" disabled>
+            </div>
+            
+            <hr>
+            
+            {% if user.role == 'job_seeker' %}
+              <!-- Job Seeker Profile Fields -->
+              <div class="form-group">
+                <label for="{{ form.skills.id_for_label }}">Skills</label>
+                {{ form.skills }}
+                {% if form.skills.errors %}
+                <div class="invalid-feedback d-block">{{ form.skills.errors }}</div>
+                {% endif %}
+                <small class="form-text text-muted">Comma-separated list of your skills.</small>
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.experience_years.id_for_label }}">Years of Experience</label>
+                {{ form.experience_years }}
+                {% if form.experience_years.errors %}
+                <div class="invalid-feedback d-block">{{ form.experience_years.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.education.id_for_label }}">Education</label>
+                {{ form.education }}
+                {% if form.education.errors %}
+                <div class="invalid-feedback d-block">{{ form.education.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.resume.id_for_label }}">Resume (PDF)</label>
+                {{ form.resume }}
+                {% if form.resume.errors %}
+                <div class="invalid-feedback d-block">{{ form.resume.errors }}</div>
+                {% endif %}
+                {% if user.jobseekerprofile.resume %}
+                <small class="form-text text-muted">
+                  Current resume: <a href="{{ user.jobseekerprofile.resume.url }}" target="_blank">View</a>
+                </small>
+                {% endif %}
+              </div>
+              
+            {% elif user.role == 'employer' %}
+              <!-- Employer Profile Fields -->
+              <div class="form-group">
+                <label for="{{ form.company_name.id_for_label }}">Company Name</label>
+                {{ form.company_name }}
+                {% if form.company_name.errors %}
+                <div class="invalid-feedback d-block">{{ form.company_name.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.company_description.id_for_label }}">Company Description</label>
+                {{ form.company_description }}
+                {% if form.company_description.errors %}
+                <div class="invalid-feedback d-block">{{ form.company_description.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.company_website.id_for_label }}">Company Website</label>
+                {{ form.company_website }}
+                {% if form.company_website.errors %}
+                <div class="invalid-feedback d-block">{{ form.company_website.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.company_logo.id_for_label }}">Company Logo</label>
+                {{ form.company_logo }}
+                {% if form.company_logo.errors %}
+                <div class="invalid-feedback d-block">{{ form.company_logo.errors }}</div>
+                {% endif %}
+                {% if user.employerprofile.company_logo %}
+                <small class="form-text text-muted">
+                  Current logo: <a href="{{ user.employerprofile.company_logo.url }}" target="_blank">View</a>
+                </small>
+                {% endif %}
+              </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-common log-btn">Update Profile</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content section End -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-control, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  textarea {
+    min-height: 120px;
+  }
+</style>
+{% endblock %}

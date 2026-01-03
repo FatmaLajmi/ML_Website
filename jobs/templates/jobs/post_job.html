@@ -1,0 +1,217 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Post a Job - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>Post a New Job</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Content section Start --> 
+<section id="content" class="section-padding">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-md-10 col-xs-12">
+        <div class="page-login-form box">
+          <h3>Job Details</h3>
+          
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+              <label for="{{ form.title.id_for_label }}">Job Title *</label>
+              {{ form.title }}
+              {% if form.title.errors %}
+              <div class="invalid-feedback d-block">{{ form.title.errors }}</div>
+              {% endif %}
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.description.id_for_label }}">Job Description *</label>
+              {{ form.description }}
+              {% if form.description.errors %}
+              <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
+              {% endif %}
+              <small class="form-text text-muted">Describe the role, responsibilities, and what you're looking for.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.requirements.id_for_label }}">Requirements *</label>
+              {{ form.requirements }}
+              {% if form.requirements.errors %}
+              <div class="invalid-feedback d-block">{{ form.requirements.errors }}</div>
+              {% endif %}
+              <small class="form-text text-muted">List the skills, qualifications, and experience required.</small>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.company_name.id_for_label }}">Company Name *</label>
+                  {{ form.company_name }}
+                  {% if form.company_name.errors %}
+                  <div class="invalid-feedback d-block">{{ form.company_name.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.company_website.id_for_label }}">Company Website</label>
+                  {{ form.company_website }}
+                  {% if form.company_website.errors %}
+                  <div class="invalid-feedback d-block">{{ form.company_website.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.company_logo.id_for_label }}">Company Logo</label>
+              {{ form.company_logo }}
+              {% if form.company_logo.errors %}
+              <div class="invalid-feedback d-block">{{ form.company_logo.errors }}</div>
+              {% endif %}
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.location.id_for_label }}">Location *</label>
+                  {{ form.location }}
+                  {% if form.location.errors %}
+                  <div class="invalid-feedback d-block">{{ form.location.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.job_type.id_for_label }}">Job Type *</label>
+                  {{ form.job_type }}
+                  {% if form.job_type.errors %}
+                  <div class="invalid-feedback d-block">{{ form.job_type.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.experience_level.id_for_label }}">Experience Level *</label>
+                  {{ form.experience_level }}
+                  {% if form.experience_level.errors %}
+                  <div class="invalid-feedback d-block">{{ form.experience_level.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.education_level.id_for_label }}">Education Level *</label>
+                  {{ form.education_level }}
+                  {% if form.education_level.errors %}
+                  <div class="invalid-feedback d-block">{{ form.education_level.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.min_salary.id_for_label }}">Minimum Salary</label>
+                  {{ form.min_salary }}
+                  {% if form.min_salary.errors %}
+                  <div class="invalid-feedback d-block">{{ form.min_salary.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.max_salary.id_for_label }}">Maximum Salary</label>
+                  {{ form.max_salary }}
+                  {% if form.max_salary.errors %}
+                  <div class="invalid-feedback d-block">{{ form.max_salary.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.skills_required.id_for_label }}">Skills Required</label>
+              {{ form.skills_required }}
+              {% if form.skills_required.errors %}
+              <div class="invalid-feedback d-block">{{ form.skills_required.errors }}</div>
+              {% endif %}
+              <small class="form-text text-muted">Comma-separated list of skills.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.benefits.id_for_label }}">Benefits</label>
+              {{ form.benefits }}
+              {% if form.benefits.errors %}
+              <div class="invalid-feedback d-block">{{ form.benefits.errors }}</div>
+              {% endif %}
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.deadline.id_for_label }}">Application Deadline *</label>
+              {{ form.deadline }}
+              {% if form.deadline.errors %}
+              <div class="invalid-feedback d-block">{{ form.deadline.errors }}</div>
+              {% endif %}
+              <small class="form-text text-muted">Format: YYYY-MM-DD</small>
+            </div>
+            
+            <div class="alert alert-info">
+              <i class="lni-information"></i> Your job posting will be reviewed by our admin team before it goes live.
+            </div>
+            
+            <button type="submit" class="btn btn-common log-btn">Post Job</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content section End -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-control, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  textarea {
+    min-height: 150px;
+  }
+  
+  select {
+    background-color: white;
+  }
+</style>
+{% endblock %}

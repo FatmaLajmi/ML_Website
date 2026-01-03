@@ -1,0 +1,158 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ job.title }} - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-8 col-md-6 col-xs-12">
+        <div class="breadcrumb-wrapper">
+          <div class="img-wrapper">
+            {% if job.company_logo %}
+            <img src="{{ job.company_logo.url }}" alt="{{ job.company_name }}">
+            {% else %}
+            <img src="{% static 'img/about/company-logo.png' %}" alt="{{ job.company_name }}">
+            {% endif %}
+          </div>
+          <div class="content">
+            <h3 class="product-title">{{ job.title }}</h3>
+            <p class="brand">{{ job.company_name }}</p>
+            <div class="tags">  
+              <span><i class="lni-map-marker"></i> {{ job.location }}</span>  
+              <span><i class="lni-calendar"></i> Posted {{ job.created_at|date:"d M, Y" }}</span>
+              <span class="badge badge-{{ job.is_approved|yesno:'success,warning' }}">
+                {{ job.is_approved|yesno:'Approved,Pending Approval' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6 col-xs-12">
+        <div class="month-price">
+          <span class="year">{{ job.job_type }}</span>
+          <div class="price">
+            {% if job.min_salary and job.max_salary %}
+            ${{ job.min_salary|floatformat:0 }} - ${{ job.max_salary|floatformat:0 }}
+            {% else %}
+            Salary Not Disclosed
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Job Detail Section Start -->  
+<section class="job-detail section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-12 col-xs-12">
+        <div class="job-description">
+          <h3 class="desc-title">Job Description</h3>
+          <p>{{ job.description|linebreaks }}</p>
+          
+          <h3 class="desc-title mt-4">Requirements</h3>
+          <p>{{ job.requirements|linebreaks }}</p>
+          
+          <h3 class="desc-title mt-4">Additional Information</h3>
+          <ul class="job-meta">
+            <li><strong>Job Type:</strong> {{ job.job_type }}</li>
+            <li><strong>Experience Level:</strong> {{ job.experience_level }}</li>
+            <li><strong>Education:</strong> {{ job.education_level }}</li>
+            {% if job.skills_required %}
+            <li><strong>Skills Required:</strong> {{ job.skills_required }}</li>
+            {% endif %}
+            {% if job.benefits %}
+            <li><strong>Benefits:</strong> {{ job.benefits }}</li>
+            {% endif %}
+            <li><strong>Application Deadline:</strong> {{ job.deadline|date:"d M, Y" }}</li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="col-lg-4 col-md-12 col-xs-12">
+        <aside class="sidebar">
+          <!-- Job Summary Widget -->
+          <div class="widget job-summary">
+            <h4 class="widget-title">Job Summary</h4>
+            <ul>
+              <li><i class="lni-user"></i> Posted By: <span>{{ job.posted_by.username }}</span></li>
+              <li><i class="lni-map-marker"></i> Location: <span>{{ job.location }}</span></li>
+              <li><i class="lni-briefcase"></i> Job Type: <span>{{ job.job_type }}</span></li>
+              <li><i class="lni-calendar"></i> Deadline: <span>{{ job.deadline|date:"d M, Y" }}</span></li>
+              <li><i class="lni-eye"></i> Applications: <span>{{ job.applications.count }}</span></li>
+            </ul>
+          </div>
+          
+          <!-- Apply Widget -->
+          {% if user.is_authenticated %}
+            {% if user.role == 'job_seeker' %}
+              {% if has_applied %}
+              <div class="widget">
+                <div class="alert alert-success">
+                  <i class="lni-check-mark-circle"></i> You have already applied for this job.
+                </div>
+              </div>
+              {% else %}
+                {% if job.is_approved %}
+                <div class="widget">
+                  <a href="{% url 'jobs:apply_job' job.id %}" class="btn btn-common btn-block">Apply Now</a>
+                </div>
+                {% endif %}
+              {% endif %}
+            {% elif user.role == 'employer' and job.posted_by == user %}
+            <div class="widget">
+              <a href="{% url 'jobs:edit_job' job.id %}" class="btn btn-common btn-block mb-2">Edit Job</a>
+              <a href="{% url 'jobs:job_applications' job.id %}" class="btn btn-common btn-block mb-2">View Applications ({{ job.applications.count }})</a>
+              <a href="{% url 'jobs:delete_job' job.id %}" class="btn btn-danger btn-block" onclick="return confirm('Are you sure you want to delete this job?')">Delete Job</a>
+            </div>
+            {% endif %}
+          {% else %}
+          <div class="widget">
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-common btn-block">Login to Apply</a>
+          </div>
+          {% endif %}
+          
+          <!-- Company Info Widget -->
+          <div class="widget company-info">
+            <h4 class="widget-title">Company Information</h4>
+            <div class="company-logo">
+              {% if job.company_logo %}
+              <img src="{{ job.company_logo.url }}" alt="{{ job.company_name }}">
+              {% else %}
+              <img src="{% static 'img/about/company-logo.png' %}" alt="{{ job.company_name }}">
+              {% endif %}
+            </div>
+            <h5>{{ job.company_name }}</h5>
+            {% if job.company_website %}
+            <p><i class="lni-world"></i> <a href="{{ job.company_website }}" target="_blank">{{ job.company_website }}</a></p>
+            {% endif %}
+          </div>
+          
+          <!-- Share Widget -->
+          <div class="widget">
+            <h4 class="widget-title">Share This Job</h4>
+            <div class="share-buttons">
+              <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary btn-sm">
+                <i class="lni-facebook-filled"></i> Facebook
+              </a>
+              <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text={{ job.title }}" target="_blank" class="btn btn-info btn-sm">
+                <i class="lni-twitter-filled"></i> Twitter
+              </a>
+              <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri }}" target="_blank" class="btn btn-primary btn-sm">
+                <i class="lni-linkedin-filled"></i> LinkedIn
+              </a>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Job Detail Section End -->
+{% endblock %}

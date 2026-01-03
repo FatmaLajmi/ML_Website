@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Browse Jobs - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>Browse Jobs</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Job Listing Section Start -->
+<section id="job-listing" class="section-padding">
+  <div class="container">
+    <div class="row">
+      <!-- Sidebar Start -->
+      <div class="col-lg-3 col-md-12 col-xs-12">
+        <aside class="sidebar">
+          <!-- Search Widget -->
+          <div class="widget">
+            <h4 class="widget-title">Filter Jobs</h4>
+            <form method="get" action="{% url 'jobs:job_list' %}">
+              <div class="form-group">
+                <label>Keywords</label>
+                <input type="text" class="form-control" name="search" placeholder="Job title or keywords" value="{{ request.GET.search }}">
+              </div>
+              
+              <div class="form-group">
+                <label>Location</label>
+                <input type="text" class="form-control" name="location" placeholder="City or state" value="{{ request.GET.location }}">
+              </div>
+              
+              <div class="form-group">
+                <label>Job Type</label>
+                <select class="form-control" name="job_type">
+                  <option value="">All Types</option>
+                  <option value="Full-time" {% if request.GET.job_type == "Full-time" %}selected{% endif %}>Full-time</option>
+                  <option value="Part-time" {% if request.GET.job_type == "Part-time" %}selected{% endif %}>Part-time</option>
+                  <option value="Contract" {% if request.GET.job_type == "Contract" %}selected{% endif %}>Contract</option>
+                  <option value="Freelance" {% if request.GET.job_type == "Freelance" %}selected{% endif %}>Freelance</option>
+                </select>
+              </div>
+              
+              <div class="form-group">
+                <label>Experience Level</label>
+                <select class="form-control" name="experience_level">
+                  <option value="">All Levels</option>
+                  <option value="Entry Level" {% if request.GET.experience_level == "Entry Level" %}selected{% endif %}>Entry Level</option>
+                  <option value="Mid Level" {% if request.GET.experience_level == "Mid Level" %}selected{% endif %}>Mid Level</option>
+                  <option value="Senior Level" {% if request.GET.experience_level == "Senior Level" %}selected{% endif %}>Senior Level</option>
+                  <option value="Executive" {% if request.GET.experience_level == "Executive" %}selected{% endif %}>Executive</option>
+                </select>
+              </div>
+              
+              <button type="submit" class="btn btn-common btn-block">Apply Filters</button>
+              <a href="{% url 'jobs:job_list' %}" class="btn btn-secondary btn-block">Clear Filters</a>
+            </form>
+          </div>
+        </aside>
+      </div>
+      <!-- Sidebar End -->
+      
+      <!-- Job List Start -->
+      <div class="col-lg-9 col-md-12 col-xs-12">
+        <div class="job-alerts-item">
+          <h3 class="alerts-title">Showing {{ jobs.count }} Jobs</h3>
+          
+          {% if jobs %}
+            {% for job in jobs %}
+            <div class="job-box d-md-flex align-items-center justify-content-between mb-30">
+              <div class="job-left my-4 d-md-flex align-items-center flex-wrap">
+                <div class="img-holder mr-md-4 mb-md-0 mb-4 mx-auto mx-md-0 d-md-none d-lg-flex">
+                  {% if job.company_logo %}
+                  <img src="{{ job.company_logo.url }}" alt="{{ job.company_name }}">
+                  {% else %}
+                  <img src="{% static 'img/about/company-logo.png' %}" alt="{{ job.company_name }}">
+                  {% endif %}
+                </div>
+                <div class="job-content">
+                  <h5 class="text-center text-md-left">
+                    <a href="{% url 'jobs:job_detail' job.id %}">{{ job.title }}</a>
+                  </h5>
+                  <ul class="d-md-flex flex-wrap text-capitalize ff-open-sans">
+                    <li class="mr-md-4">
+                      <i class="lni-briefcase mr-2"></i> {{ job.company_name }}
+                    </li>
+                    <li class="mr-md-4">
+                      <i class="lni-map-marker mr-2"></i> {{ job.location }}
+                    </li>
+                    <li class="mr-md-4">
+                      <i class="lni-alarm-clock mr-2"></i> {{ job.job_type }}
+                    </li>
+                    {% if job.min_salary and job.max_salary %}
+                    <li>
+                      <i class="lni-dollar mr-2"></i> ${{ job.min_salary|floatformat:0 }} - ${{ job.max_salary|floatformat:0 }}
+                    </li>
+                    {% endif %}
+                  </ul>
+                </div>
+              </div>
+              <div class="job-right my-4 flex-shrink-0">
+                <a href="{% url 'jobs:job_detail' job.id %}" class="btn d-block w-100 d-sm-inline-block btn-light">View Details</a>
+              </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Pagination -->
+            {% if is_paginated %}
+            <div class="pagination-bar">
+              <nav>
+                <ul class="pagination justify-content-center">
+                  {% if page_obj.has_previous %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page=1{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.job_type %}&job_type={{ request.GET.job_type }}{% endif %}{% if request.GET.experience_level %}&experience_level={{ request.GET.experience_level }}{% endif %}">First</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.job_type %}&job_type={{ request.GET.job_type }}{% endif %}{% if request.GET.experience_level %}&experience_level={{ request.GET.experience_level }}{% endif %}">Previous</a>
+                  </li>
+                  {% endif %}
+                  
+                  <li class="page-item active">
+                    <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                  </li>
+                  
+                  {% if page_obj.has_next %}
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.job_type %}&job_type={{ request.GET.job_type }}{% endif %}{% if request.GET.experience_level %}&experience_level={{ request.GET.experience_level }}{% endif %}">Next</a>
+                  </li>
+                  <li class="page-item">
+                    <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if request.GET.search %}&search={{ request.GET.search }}{% endif %}{% if request.GET.location %}&location={{ request.GET.location }}{% endif %}{% if request.GET.job_type %}&job_type={{ request.GET.job_type }}{% endif %}{% if request.GET.experience_level %}&experience_level={{ request.GET.experience_level }}{% endif %}">Last</a>
+                  </li>
+                  {% endif %}
+                </ul>
+              </nav>
+            </div>
+            {% endif %}
+            
+          {% else %}
+            <div class="alert alert-info">
+              <h4>No jobs found</h4>
+              <p>Try adjusting your filters or search criteria to find more jobs.</p>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <!-- Job List End -->
+    </div>
+  </div>
+</section>
+<!-- Job Listing Section End -->
+{% endblock %}
