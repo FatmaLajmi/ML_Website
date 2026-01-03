@@ -23,7 +23,7 @@
   <div class="container">
     <div class="row mb-4">
       <div class="col-12 text-right">
-        <a href="{% url 'jobs:post_job' %}" class="btn btn-common"><i class="lni-plus"></i> Post New Job</a>
+        <a href="{% url 'jobs:add_job' %}" class="btn btn-common"><i class="lni-plus"></i> Post New Job</a>
       </div>
     </div>
     
@@ -40,7 +40,6 @@
                   <th>Status</th>
                   <th>Applications</th>
                   <th>Posted Date</th>
-                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -48,26 +47,14 @@
                 <tr>
                   <td><a href="{% url 'jobs:job_detail' job.id %}">{{ job.title }}</a></td>
                   <td>{{ job.location }}</td>
-                  <td>{{ job.job_type }}</td>
+                  <td>{{ job.get_job_type_display }}</td>
                   <td>
-                    <span class="badge badge-{{ job.is_approved|yesno:'success,warning' }}">
-                      {{ job.is_approved|yesno:'Approved,Pending' }}
+                    <span class="badge badge-{{ job.approved|yesno:'success,warning' }}">
+                      {{ job.approved|yesno:'Approved,Pending' }}
                     </span>
                   </td>
-                  <td>
-                    <a href="{% url 'jobs:job_applications' job.id %}">
-                      {{ job.applications.count }} applicants
-                    </a>
-                  </td>
-                  <td>{{ job.created_at|date:"d M, Y" }}</td>
-                  <td>
-                    <a href="{% url 'jobs:edit_job' job.id %}" class="btn btn-sm btn-primary">
-                      <i class="lni-pencil"></i> Edit
-                    </a>
-                    <a href="{% url 'jobs:delete_job' job.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
-                      <i class="lni-trash"></i> Delete
-                    </a>
-                  </td>
+                  <td>{{ job.applications.count }} applicant{{ job.applications.count|pluralize }}</td>
+                  <td>{{ job.posted_at|date:"d M, Y" }}</td>
                 </tr>
                 {% endfor %}
               </tbody>
@@ -77,7 +64,7 @@
           <div class="alert alert-info text-center">
             <h4>You haven't posted any jobs yet</h4>
             <p>Start attracting top talent by posting your first job!</p>
-            <a href="{% url 'jobs:post_job' %}" class="btn btn-common mt-3">Post Your First Job</a>
+            <a href="{% url 'jobs:add_job' %}" class="btn btn-common mt-3">Post Your First Job</a>
           </div>
         {% endif %}
       </div>

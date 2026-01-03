@@ -41,32 +41,80 @@
           </div>
           <div class="collapse navbar-collapse" id="main-navbar">
             <ul class="navbar-nav mr-auto w-100 justify-content-end">
+              <!-- Home - Always visible -->
               <li class="nav-item">
-                <a class="nav-link" href="{% url 'home' %}">Home</a>
+                <a class="nav-link" href="{% url 'home' %}">
+                  <i class="lni-home"></i> Home
+                </a>
               </li>
+              
+              <!-- Analytics - Always visible -->
               <li class="nav-item">
-                <a class="nav-link" href="#">About</a>
+                <a class="nav-link" href="#">
+                  <i class="lni-bar-chart"></i> Analytics
+                </a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Browse Jobs</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Contact</a>
-              </li>
+              
               {% if user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link" href="#">Profile</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="#">Logout</a>
-              </li>
+                {% if user.role == 'job_seeker' %}
+                  <!-- Job Seeker specific links -->
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'jobs:job_list' %}">
+                      <i class="lni-briefcase"></i> Job Offers
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'jobs:jobs_applied' %}">
+                      <i class="lni-files"></i> Jobs Applied For
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <i class="lni-brain"></i> Prediction Models
+                    </a>
+                  </li>
+                  
+                {% elif user.role == 'employer' %}
+                  <!-- Employer specific links -->
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'jobs:my_jobs' %}">
+                      <i class="lni-briefcase"></i> My Job Postings
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'jobs:add_job' %}">
+                      <i class="lni-plus"></i> Post a New Job
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="#">
+                      <i class="lni-brain"></i> Prediction Models
+                    </a>
+                  </li>
+                {% endif %}
+                
+                <!-- Profile dropdown - All authenticated users -->
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+                    <i class="lni-user"></i> {{ user.get_full_name|default:user.username }}
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="lni-user"></i> My Profile</a></li>
+                    <li><a class="dropdown-item" href="{% url 'accounts:dashboard_redirect' %}"><i class="lni-dashboard"></i> Dashboard</a></li>
+                    <li class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="lni-exit"></i> Logout</a></li>
+                  </ul>
+                </li>
               {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="#">Sign In</a>
-              </li>
-              <li class="button-group">
-                <a href="#" class="button btn btn-common">Register</a>
-              </li>
+                <!-- Not authenticated - Show Sign In and Register -->
+                <li class="nav-item">
+                  <a class="nav-link" href="{% url 'accounts:login' %}">
+                    <i class="lni-lock"></i> Sign In
+                  </a>
+                </li>
+                <li class="button-group">
+                  <a href="{% url 'accounts:signup' %}" class="button btn btn-common">Register</a>
+                </li>
               {% endif %}
             </ul>
           </div>
