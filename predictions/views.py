@@ -107,7 +107,58 @@ def employer_predictions_view(request):
         'campaign_conversion_form': CampaignConversionPredictionForm(),
     }
     
-    # TODO: Implement employer predictions handling
+    if request.method == 'POST':
+        prediction_type = request.POST.get('prediction_type', '')
+        
+        if prediction_type == 'growth':
+            # Handle company growth prediction
+            try:
+                workers_input = request.POST.get('workers', '').strip()
+                prev_workers_input = request.POST.get('previous_workers', '').strip()
+                revenue_input = request.POST.get('revenue', '').strip()
+                delta_workers_input = request.POST.get('delta_workers', '').strip()
+                founded_input = request.POST.get('founded', '').strip()
+                industry_input = request.POST.get('industry', '').strip()
+                
+                # Validate required fields
+                if not all([workers_input, prev_workers_input, revenue_input]):
+                    messages.error(request, 'Please fill in all required fields')
+                    return render(request, 'predictions/employersPredictions.html', context)
+                
+                # Calculate delta if not provided
+                if not delta_workers_input:
+                    delta_workers_input = str(float(workers_input) - float(prev_workers_input))
+                
+                # Default founded year if not provided
+                if not founded_input:
+                    founded_input = '2010'
+                
+                input_data = {
+                    'workers': float(workers_input),
+                    'previous_workers': float(prev_workers_input),
+                    'revenue': float(revenue_input),
+                    'delta_workers': float(delta_workers_input),
+                    'founded': int(founded_input),
+                    'industry': industry_input if industry_input else 'Other',
+                }
+                
+                # Import and use the company growth predictor
+                from ml_models.predictors.company_growth_predictor import company_growth_predictor
+                
+                # Make prediction
+                result = company_growth_predictor.predict(input_data)
+                
+                if result.get('success'):
+                    context['growth_result'] = result
+                    messages.success(request, f"Predicted Growth: {result['growth_percentage_formatted']}")
+                else:
+                    messages.error(request, result.get('error', 'Prediction failed'))
+                
+                # Keep form data for display
+                context['growth_form_data'] = input_data
+                
+            except (ValueError, TypeError) as e:
+                messages.error(request, f'Invalid input: Please enter valid numbers. {str(e)}')
     
     return render(request, 'predictions/employersPredictions.html', context)
 
