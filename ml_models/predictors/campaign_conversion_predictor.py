@@ -81,13 +81,14 @@ class CampaignConversionPredictor:
         """
         Prepare features for the model
         The model expects one-hot encoded categorical features with scaled Duration
-        NOTE: Company and Location are NOT used (removed for generalization)
         """
-        # Create a DataFrame with the input (NO Company or Location)
+        # Create a DataFrame with the input (including Company and Location)
         df = pd.DataFrame([{
+            'Company': input_data.get('company', ''),
             'Campaign_Type': input_data.get('campaign_type', ''),
             'Target_Audience': input_data.get('target_audience', ''),
             'Channel_Used': input_data.get('channel_used', ''),
+            'Location': input_data.get('location', ''),
             'Language': input_data.get('language', ''),
             'Customer_Segment': input_data.get('customer_segment', ''),
             'Duration': int(input_data.get('duration', 30))
@@ -95,9 +96,9 @@ class CampaignConversionPredictor:
         
         print(f"DEBUG - Input data: {input_data}")
         
-        # Define categorical columns (NO Company or Location)
-        categorical_cols = ['Campaign_Type', 'Target_Audience', 
-                          'Channel_Used', 'Language', 'Customer_Segment']
+        # Define categorical columns (including Company and Location)
+        categorical_cols = ['Company', 'Campaign_Type', 'Target_Audience', 
+                          'Channel_Used', 'Location', 'Language', 'Customer_Segment']
         
         # One-hot encode
         df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
@@ -140,81 +141,6 @@ class CampaignConversionPredictor:
         print(f"DEBUG - Active features: {non_zero}")
         
         return final_df
-        """
-        Prepare features for the model
-        The model expects one-hot encoded categorical features with scaled Duration
-        """
-        # Create a DataFrame with the input
-        df = pd.DataFrame([{
-            'Company': input_data.get('company', ''),
-            'Campaign_Type': input_data.get('campaign_type', ''),
-            'Target_Audience': input_data.get('target_audience', ''),
-            'Channel_Used': input_data.get('channel_used', ''),
-            'Location': input_data.get('location', ''),
-            'Language': input_data.get('language', ''),
-            'Customer_Segment': input_data.get('customer_segment', ''),
-            'Duration': int(input_data.get('duration', 30))
-        }])
-        
-        # Debug: Print input
-        print(f"DEBUG - Input data: {input_data}")
-        
-        # Define categorical columns
-        categorical_cols = ['Company', 'Campaign_Type', 'Target_Audience', 
-                          'Channel_Used', 'Location', 'Language', 'Customer_Segment']
-        
-        # One-hot encode
-        df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
-        
-        print(f"DEBUG - Encoded features: {df_encoded.columns.tolist()}")
-        print(f"DEBUG - Duration before scaling: {df_encoded['Duration'].values[0]}")
-        
-        # Get expected features from the model
-        if hasattr(self.model, 'feature_names_in_'):
-            expected_features = list(self.model.feature_names_in_)
-            print(f"DEBUG - Model expects {len(expected_features)} features")
-            print(f"DEBUG - Expected features: {expected_features[:10]}...")  # Print first 10
-        else:
-            print("WARNING - Model does not have feature_names_in_, using current features")
-            expected_features = df_encoded.columns.tolist()
-        
-        # Scale Duration BEFORE aligning features (this is how training did it)
-        if 'Duration' in df_encoded.columns:
-            original_duration = df_encoded['Duration'].values[0]
-            if self.scaler is not None:
-                try:
-                    df_encoded['Duration'] = self.scaler.transform(df_encoded[['Duration']])
-                    print(f"DEBUG - Duration after scaling: {df_encoded['Duration'].values[0]}")
-                except Exception as e:
-                    print(f"DEBUG - Scaling failed: {e}, using manual scaling")
-                    # Manual scaling as fallback
-                    df_encoded['Duration'] = (df_encoded['Duration'] - self.duration_mean) / self.duration_std
-                    print(f"DEBUG - Duration manually scaled from {original_duration} to {df_encoded['Duration'].values[0]}")
-            else:
-                # Use manual scaling
-                df_encoded['Duration'] = (df_encoded['Duration'] - self.duration_mean) / self.duration_std
-                print(f"DEBUG - Duration manually scaled from {original_duration} to {df_encoded['Duration'].values[0]}")
-        
-        # Add missing columns with 0 (for features not in current input)
-        for col in expected_features:
-            if col not in df_encoded.columns:
-                df_encoded[col] = 0
-        
-        # Remove extra columns not in expected features
-        df_encoded = df_encoded[[col for col in expected_features if col in df_encoded.columns or col in expected_features]]
-        
-        # Ensure all expected features are present in correct order
-        final_df = pd.DataFrame(columns=expected_features)
-        for col in expected_features:
-            if col in df_encoded.columns:
-                final_df[col] = df_encoded[col].values
-            else:
-                final_df[col] = 0
-        
-        print(f"DEBUG - Final feature shape: {final_df.shape}")
-        print(f"DEBUG - Non-zero features: {[(col, val) for col, val in final_df.iloc[0].items() if val != 0]}")
-        
-        return final_df
     
     def _get_all_possible_features(self):
         """
@@ -222,17 +148,21 @@ class CampaignConversionPredictor:
         This recreates the feature names that would be generated during training
         """
         # All possible values from the form (need to match training data)
-        companies = []  # We don't know all companies, this might need adjustment
+        companies = ['Alpha Innovations', 'DataTech Solutions', 'Innovate Industries', 'NexGen Systems', 'TechCorp']
         campaign_types = ['Email', 'Influencer', 'Search', 'Social Media']
         target_audiences = ['All Ages', 'Men 18-24', 'Men 25-34', 'Women 25-34', 'Women 35-44']
         channels = ['Email', 'Facebook', 'Google Ads', 'Instagram', 'Website', 'YouTube']
-        locations = []  # We don't know all locations
+        locations = ['Chicago', 'Houston', 'Los Angeles', 'Miami', 'New York']
         languages = ['English', 'French', 'Spanish', 'Mandarin', 'German']
         segments = ['Fashionistas', 'Health & Wellness', 'Outdoor Adventures', 'Foodies', 'Tech Enthusiasts']
         
         features = ['Duration']  # Start with numeric feature
         
         # Add one-hot encoded features (drop_first=True means first alphabetically is dropped)
+        # Company (drop Alpha Innovations as it's first alphabetically)
+        for val in sorted(companies)[1:]:
+            features.append(f'Company_{val}')
+        
         # Campaign_Type (drop Email as it's first alphabetically)
         for val in sorted(campaign_types)[1:]:
             features.append(f'Campaign_Type_{val}')
@@ -245,6 +175,10 @@ class CampaignConversionPredictor:
         for val in sorted(channels)[1:]:
             features.append(f'Channel_Used_{val}')
         
+        # Location (drop Chicago as it's first alphabetically)
+        for val in sorted(locations)[1:]:
+            features.append(f'Location_{val}')
+        
         # Language (drop English)
         for val in sorted(languages)[1:]:
             features.append(f'Language_{val}')
@@ -252,9 +186,6 @@ class CampaignConversionPredictor:
         # Customer_Segment (drop Fashionistas)
         for val in sorted(segments)[1:]:
             features.append(f'Customer_Segment_{val}')
-        
-        # Note: Company and Location are dynamic and would need to be handled
-        # based on the actual training data. For now, we'll let the model handle missing features
         
         return features
     
