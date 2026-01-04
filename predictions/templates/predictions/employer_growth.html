@@ -1,0 +1,330 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Company Growth Prediction - Employers - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>Company Revenue Growth Prediction</h3>
+          <p>Forecast your company's revenue growth percentage</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Content Section Start -->
+<section id="content" class="section-padding">
+  <div class="container">
+    
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <div class="row justify-content-center">
+      <div class="col-lg-9">
+        
+        <!-- Prediction Result -->
+        {% if result %}
+        <div class="card mb-4">
+          <div class="card-header bg-{% if result.growth_percentage >= 20 %}success{% elif result.growth_percentage >= 5 %}info{% elif result.growth_percentage >= 0 %}warning{% else %}danger{% endif %} text-white">
+            <h4 class="mb-0">
+              <i class="lni-bar-chart"></i>
+              Growth Prediction Result
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="result-box text-center py-4">
+              <h1 class="display-3 mb-3">{{ result.growth_percentage_formatted }}</h1>
+              <h3 class="mb-4">{{ result.interpretation }}</h3>
+              <hr>
+              <div class="row mt-4">
+                <div class="col-md-12">
+                  <p class="lead">
+                    {% if result.interpretation == "Rapid Growth" %}
+                      <i class="lni-rocket"></i>
+                      Outstanding! Your company is projected to experience explosive revenue growth (>30%).
+                      This indicates exceptional market position and strong expansion momentum. Prepare for scaling operations.
+                    {% elif result.interpretation == "High Growth" %}
+                      <i class="lni-rocket"></i>
+                      Excellent! Your company is projected to experience significant revenue growth (15-30%).
+                      This indicates strong market position and expansion potential.
+                    {% elif result.interpretation == "Moderate Growth" %}
+                      <i class="lni-thumbs-up"></i>
+                      Good news! Your company is expected to grow at a healthy, sustainable rate (5-15%).
+                      Continue your current strategies while exploring new opportunities.
+                    {% elif result.interpretation == "Slow Growth" %}
+                      <i class="lni-checkmark"></i>
+                      Your company is predicted to maintain slight positive growth (0-5%).
+                      Consider strategies to accelerate expansion and market penetration.
+                    {% else %}
+                      <i class="lni-warning"></i>
+                      Warning: Negative growth predicted. Review your business model, reduce costs,
+                      and explore new revenue streams to reverse this trend.
+                    {% endif %}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Prediction Form -->
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+              <i class="lni-write"></i>
+              Enter Company Data
+            </h4>
+          </div>
+          <div class="card-body">
+            <form method="post" action="{% url 'predictions:employer_growth' %}">
+              {% csrf_token %}
+              
+              <h5 class="mb-3">Current Information</h5>
+              
+              <!-- Current Workers -->
+              <div class="form-group">
+                <label for="id_workers">
+                  Current Number of Employees <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  name="workers" 
+                  id="id_workers"
+                  class="form-control" 
+                  placeholder="e.g., 150"
+                  min="0"
+                  required
+                  value="{{ form_data.workers|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Total number of current employees
+                </small>
+              </div>
+              
+              <!-- Current Revenue -->
+              <div class="form-group">
+                <label for="id_revenue">
+                  Current Annual Revenue ($) <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  name="revenue" 
+                  id="id_revenue"
+                  class="form-control" 
+                  placeholder="e.g., 5000000"
+                  min="0"
+                  step="0.01"
+                  required
+                  value="{{ form_data.revenue|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Current annual revenue in dollars
+                </small>
+              </div>
+              
+              <h5 class="mt-4 mb-3">Previous Period Information</h5>
+              
+              <!-- Previous Workers -->
+              <div class="form-group">
+                <label for="id_previous_workers">
+                  Previous Number of Employees <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  name="previous_workers" 
+                  id="id_previous_workers"
+                  class="form-control" 
+                  placeholder="e.g., 120"
+                  min="0"
+                  required
+                  value="{{ form_data.previous_workers|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Number of employees in the previous period
+                </small>
+              </div>
+              
+              <!-- Delta Workers -->
+              <div class="form-group">
+                <label for="id_delta_workers">
+                  Change in Employees <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  name="delta_workers" 
+                  id="id_delta_workers"
+                  class="form-control" 
+                  placeholder="e.g., 30"
+                  required
+                  value="{{ form_data.delta_workers|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Net change in employees (can be negative)
+                </small>
+              </div>
+              
+              <h5 class="mt-4 mb-3">Company Information</h5>
+              
+              <!-- Founded Year -->
+              <div class="form-group">
+                <label for="id_founded">
+                  Year Founded <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  name="founded" 
+                  id="id_founded"
+                  class="form-control" 
+                  placeholder="e.g., 2010"
+                  min="1800"
+                  max="2026"
+                  required
+                  value="{{ form_data.founded|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Year the company was founded
+                </small>
+              </div>
+              
+              <!-- Industry (Optional) -->
+              <div class="form-group">
+                <label for="id_industry">Industry (Optional)</label>
+                <input 
+                  type="text" 
+                  name="industry" 
+                  id="id_industry"
+                  class="form-control" 
+                  placeholder="e.g., Technology, Healthcare, Finance"
+                  value="{{ form_data.industry|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Your company's primary industry
+                </small>
+              </div>
+              
+              <!-- Submit Button -->
+              <div class="form-group text-center mt-4">
+                <button type="submit" class="btn btn-common btn-lg">
+                  <i class="lni-bar-chart"></i> Predict Revenue Growth
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4">
+          <h5><i class="lni-information"></i> How it works</h5>
+          <p class="mb-0">
+            Our LightGBM machine learning model analyzes your company's employee count, revenue,
+            and historical growth patterns to predict future revenue growth percentage. The model
+            uses advanced feature engineering including logarithmic transformations and growth
+            rates to provide accurate forecasts.
+          </p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content Section End -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+    border-radius: 10px;
+    margin-bottom: 2rem;
+  }
+  
+  .card-header {
+    border-radius: 10px 10px 0 0 !important;
+    padding: 1.5rem;
+  }
+  
+  .result-box {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    border-radius: 10px;
+    padding: 3rem 2rem;
+  }
+  
+  .result-box .display-3 {
+    font-weight: 800;
+    color: #2c3e50;
+  }
+  
+  .result-box h3 {
+    color: #34495e;
+    font-weight: 600;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-control {
+    border-radius: 6px;
+    border: 1px solid #ddd;
+    padding: 0.85rem;
+    font-size: 1rem;
+  }
+  
+  .form-control:focus {
+    border-color: #4c40ed;
+    box-shadow: 0 0 0 0.2rem rgba(76, 64, 237, 0.25);
+  }
+  
+  .btn-common {
+    padding: 0.85rem 2.5rem;
+    font-weight: 600;
+    border-radius: 6px;
+    font-size: 1.1rem;
+  }
+  
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 100px 0 70px;
+  }
+  
+  .page-header h3 {
+    color: white;
+    font-size: 2.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  
+  .page-header p {
+    color: rgba(255,255,255,0.95);
+    font-size: 1.2rem;
+  }
+  
+  h5 {
+    color: #2c3e50;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+  }
+</style>
+{% endblock %}
