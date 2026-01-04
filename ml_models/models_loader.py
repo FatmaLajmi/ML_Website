@@ -30,7 +30,8 @@ class ModelsLoader:
             'benefits': 'benefits_model.pkl',
             'company_growth': 'company_growth_model.pkl',
             'revenue_growth': 'revenue_growth_model.pkl',
-            'campaign_conversion': 'campaign_conversion_model.pkl',
+            'campaign_conversion': 'best_random_forest_model.pkl',
+            'campaign_scaler': 'campaign_scaler.pkl',
         }
         
         for model_name, filename in model_files.items():
@@ -38,10 +39,22 @@ class ModelsLoader:
             if model_path.exists():
                 try:
                     with open(model_path, 'rb') as f:
-                        self._models[model_name] = pickle.load(f)
+                        # Try loading with different encodings for compatibility
+                        try:
+                            self._models[model_name] = pickle.load(f)
+                        except:
+                            f.seek(0)
+                            self._models[model_name] = pickle.load(f, encoding='latin1')
                     print(f"Loaded model: {model_name}")
                 except Exception as e:
                     print(f"Error loading {model_name}: {e}")
+                    # Try with joblib as fallback
+                    try:
+                        import joblib
+                        self._models[model_name] = joblib.load(model_path)
+                        print(f"Loaded model with joblib: {model_name}")
+                    except Exception as e2:
+                        print(f"Joblib also failed for {model_name}: {e2}")
             else:
                 print(f"Model file not found: {filename}")
     

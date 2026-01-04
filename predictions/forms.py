@@ -78,8 +78,84 @@ class RevenueGrowthPredictionForm(forms.Form):
 
 
 class CampaignConversionPredictionForm(forms.Form):
-    """Form for campaign conversion prediction"""
-    campaign_name = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Campaign Name'}))
-    budget = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Campaign budget'}))
-    target_audience_size = forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Target audience size'}))
-    duration_days = forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Campaign duration (days)'}))
+    """Form for marketing campaign conversion prediction"""
+    
+    CAMPAIGN_TYPE_CHOICES = [
+        ('', 'Select Campaign Type'),
+        ('Email', 'Email'),
+        ('Influencer', 'Influencer'),
+        ('Search', 'Search'),
+        ('Social Media', 'Social Media'),
+    ]
+    
+    TARGET_AUDIENCE_CHOICES = [
+        ('', 'Select Target Audience'),
+        ('All Ages', 'All Ages'),
+        ('Men 18-24', 'Men 18-24'),
+        ('Men 25-34', 'Men 25-34'),
+        ('Women 25-34', 'Women 25-34'),
+        ('Women 35-44', 'Women 35-44'),
+    ]
+    
+    CHANNEL_CHOICES = [
+        ('', 'Select Channel'),
+        ('Email', 'Email'),
+        ('Facebook', 'Facebook'),
+        ('Google Ads', 'Google Ads'),
+        ('Instagram', 'Instagram'),
+        ('Website', 'Website'),
+        ('YouTube', 'YouTube'),
+    ]
+    
+    LANGUAGE_CHOICES = [
+        ('', 'Select Language'),
+        ('English', 'English'),
+        ('French', 'French'),
+        ('Spanish', 'Spanish'),
+        ('Mandarin', 'Mandarin'),
+        ('German', 'German'),
+    ]
+    
+    CUSTOMER_SEGMENT_CHOICES = [
+        ('', 'Select Customer Segment'),
+        ('Fashionistas', 'Fashionistas'),
+        ('Health & Wellness', 'Health & Wellness'),
+        ('Outdoor Adventures', 'Outdoor Adventures'),
+        ('Foodies', 'Foodies'),
+        ('Tech Enthusiasts', 'Tech Enthusiasts'),
+    ]
+    
+    campaign_type = forms.ChoiceField(
+        choices=CAMPAIGN_TYPE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    target_audience = forms.ChoiceField(
+        choices=TARGET_AUDIENCE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    duration = forms.IntegerField(
+        min_value=1,
+        max_value=365,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Campaign duration in days'
+        }),
+        help_text='Duration in days (1-365)'
+    )
+    
+    channel_used = forms.ChoiceField(
+        choices=CHANNEL_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    language = forms.ChoiceField(
+        choices=LANGUAGE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    customer_segment = forms.ChoiceField(
+        choices=CUSTOMER_SEGMENT_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )

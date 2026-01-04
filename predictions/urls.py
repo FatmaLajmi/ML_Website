@@ -6,4 +6,5 @@ app_name = 'predictions'
 urlpatterns = [
     path('job-seekers/', views.job_seeker_predictions_view, name='job_seeker_predictions'),
     path('employers/', views.employer_predictions_view, name='employer_predictions'),
+    path('campaign-conversion/', views.campaign_conversion_view, name='campaign_conversion'),
 ]
