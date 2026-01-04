@@ -10,6 +10,7 @@ from .benefits_predictor import benefits_predictor
 from .company_growth_predictor import company_growth_predictor
 from .revenue_growth_predictor import revenue_growth_predictor
 from .campaign_conversion_predictor import campaign_conversion_predictor
+from .xgboost_growth_predictor import xgboost_growth_predictor
 
 __all__ = [
     'salary_predictor',
@@ -20,4 +21,5 @@ __all__ = [
     'company_growth_predictor',
     'revenue_growth_predictor',
     'campaign_conversion_predictor',
+    'xgboost_growth_predictor',
 ]

@@ -17,7 +17,21 @@
     </div>
   </div>
 </div>
-<!-- Page Header End --> 
+<!-- Page Header End -->
+
+<!-- Django Messages Display -->
+{% if messages %}
+<div class="container mt-3">
+  {% for message in messages %}
+  <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  {% endfor %}
+</div>
+{% endif %} 
 
 <!-- Content section Start --> 
 <section id="content" class="section-padding">
@@ -49,18 +63,6 @@
         </div>
       </div>
       
-      <!-- Revenue Growth Prediction -->
-      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
-        <div class="box h-100">
-          <div class="icon">
-            <i class="lni-revenue"></i>
-          </div>
-          <h4>Revenue Growth Analysis</h4>
-          <p>Analyze potential revenue growth based on workforce expansion and market conditions.</p>
-          <button class="btn btn-common" data-toggle="modal" data-target="#revenueGrowthModal">Analyze Revenue</button>
-        </div>
-      </div>
-      
       <!-- Campaign Conversion Prediction -->
       <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
         <div class="box h-100">
@@ -70,6 +72,20 @@
           <h4>Job Campaign Conversion</h4>
           <p>Predict the success rate of your job postings and recruitment campaigns.</p>
           <button class="btn btn-common" data-toggle="modal" data-target="#campaignModal">Predict Conversion</button>
+        </div>
+      </div>
+      
+      <!-- XGBoost Company Growth Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-stats-up"></i>
+          </div>
+          <h4>Advanced Growth Analysis</h4>
+          <p>Get detailed growth predictions using advanced XGBoost machine learning for comprehensive company insights.</p>
+          <button class="btn btn-common btn-lg" data-toggle="modal" data-target="#xgboostGrowthModal">
+            <i class="lni-graph"></i> Advanced Analysis
+          </button>
         </div>
       </div>
     </div>
@@ -296,6 +312,170 @@
 
 <!-- Add similar modals for other prediction types -->
 
+<!-- XGBoost Company Growth Prediction Modal -->
+<div class="modal fade" id="xgboostGrowthModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: #00BCD4;">
+        <h5 class="modal-title">
+          <i class="lni-stats-up"></i> Advanced Company Growth Analysis
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Show prediction result if available -->
+        {% if xgboost_growth_result %}
+        <div class="card mb-4">
+          <div class="card-header text-white" style="background-color: #00BCD4;">
+            <h4 class="mb-0">
+              <i class="lni-{% if xgboost_growth_result.growth_category == 'High Growth' %}rocket{% else %}bar-chart{% endif %}"></i>
+              Classification Result
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="result-box text-center py-4">
+              <h2 class="mb-3" style="color: #00BCD4;">
+                {{ xgboost_growth_result.growth_category }}
+              </h2>
+              <hr>
+              <div class="text-left">
+                <h5>Input Summary:</h5>
+                <ul class="list-unstyled">
+                  <li><strong>Years on List:</strong> {{ xgboost_growth_result.input_summary.years_on_list }}</li>
+                  <li><strong>Company Age:</strong> {{ xgboost_growth_result.input_summary.company_age }} years</li>
+                  <li><strong>Hiring Growth:</strong> {{ xgboost_growth_result.input_summary.hiring_growth }}%</li>
+                  <li><strong>Industry:</strong> {{ xgboost_growth_result.input_summary.industry }}</li>
+                  <li><strong>State:</strong> {{ xgboost_growth_result.input_summary.state }}</li>
+                </ul>
+              </div>
+              <hr>
+              <p class="text-muted">
+                {% if xgboost_growth_result.growth_category == 'High Growth' %}
+                  <i class="lni-rocket"></i>
+                  <strong>High Growth Companies</strong> demonstrate strong market position, 
+                  effective hiring strategies, and solid expansion potential. Continue 
+                  your current trajectory while exploring new opportunities.
+                {% else %}
+                  <i class="lni-bar-chart"></i>
+                  <strong>Low Growth Classification</strong> suggests opportunities to optimize 
+                  operations, explore new markets, or refine your business strategy to 
+                  accelerate growth.
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- XGBoost Growth Form -->
+        <div class="card">
+          <div class="card-header text-white" style="background-color: #00BCD4;">
+            <h4 class="mb-0">
+              <i class="lni-search"></i>
+              Enter Company Information
+            </h4>
+          </div>
+          <div class="card-body">
+            <form method="post" action="{% url 'predictions:employer_predictions' %}" id="xgboostGrowthForm">
+              {% csrf_token %}
+              <input type="hidden" name="prediction_type" value="xgboost_growth">
+              
+              <!-- Years on List -->
+              <div class="form-group">
+                <label for="id_years_on_list">
+                  Years on List <span class="text-danger">*</span>
+                </label>
+                {{ xgboost_growth_form.years_on_list }}
+                <small class="form-text text-muted">
+                  {{ xgboost_growth_form.years_on_list.help_text }}
+                </small>
+                {% if xgboost_growth_form.years_on_list.errors %}
+                  <div class="text-danger">{{ xgboost_growth_form.years_on_list.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <!-- Company Age -->
+              <div class="form-group">
+                <label for="id_company_age">
+                  Company Age <span class="text-danger">*</span>
+                </label>
+                {{ xgboost_growth_form.company_age }}
+                <small class="form-text text-muted">
+                  {{ xgboost_growth_form.company_age.help_text }}
+                </small>
+                {% if xgboost_growth_form.company_age.errors %}
+                  <div class="text-danger">{{ xgboost_growth_form.company_age.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <!-- Hiring Growth -->
+              <div class="form-group">
+                <label for="id_hiring_growth">
+                  Hiring Growth (%) <span class="text-danger">*</span>
+                </label>
+                {{ xgboost_growth_form.hiring_growth }}
+                <small class="form-text text-muted">
+                  {{ xgboost_growth_form.hiring_growth.help_text }}
+                </small>
+                {% if xgboost_growth_form.hiring_growth.errors %}
+                  <div class="text-danger">{{ xgboost_growth_form.hiring_growth.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <!-- Industry -->
+              <div class="form-group">
+                <label for="id_industry">
+                  Industry <span class="text-danger">*</span>
+                </label>
+                {{ xgboost_growth_form.industry }}
+                <small class="form-text text-muted">
+                  {{ xgboost_growth_form.industry.help_text }}
+                </small>
+                {% if xgboost_growth_form.industry.errors %}
+                  <div class="text-danger">{{ xgboost_growth_form.industry.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <!-- State -->
+              <div class="form-group">
+                <label for="id_state">
+                  State <span class="text-danger">*</span>
+                </label>
+                {{ xgboost_growth_form.state }}
+                <small class="form-text text-muted">
+                  {{ xgboost_growth_form.state.help_text }}
+                </small>
+                {% if xgboost_growth_form.state.errors %}
+                  <div class="text-danger">{{ xgboost_growth_form.state.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <!-- Submit Button -->
+              <div class="form-group text-center mt-4">
+                <button type="submit" class="btn btn-success btn-lg">
+                  <i class="lni-graph"></i> Predict Company Growth
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4">
+          <h5><i class="lni-information"></i> About This Model</h5>
+          <p class="mb-0">
+            This advanced XGBoost machine learning model analyzes company characteristics
+            including years on growth lists, company age, hiring trends, industry sector,
+            and geographic location to provide accurate growth predictions.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block extra_css %}
@@ -411,10 +591,47 @@
 
 {% block extra_js %}
 <script>
-  // Auto-open growth modal if there's a prediction result
-  {% if growth_result %}
+  // Debug form submission
+  $('#growthPredictionForm').on('submit', function(e) {
+    console.log('Form is being submitted...');
+    console.log('Form data:');
+    console.log('  workers:', $('#id_workers').val());
+    console.log('  revenue:', $('#id_revenue').val());
+    console.log('  previous_workers:', $('#id_previous_workers').val());
+    console.log('  prediction_type:', $('input[name="prediction_type"]').val());
+  });
+  
+  // Auto-open growth modal if there's a prediction result or form data
+  {% if growth_result or growth_form_data %}
   $(document).ready(function() {
-    $('#growthModal').modal('show');
+    console.log('Opening growth modal...');
+    console.log('growth_result exists:', {{ growth_result|yesno:"true,false" }});
+    console.log('growth_form_data exists:', {{ growth_form_data|yesno:"true,false" }});
+    {% if growth_result %}
+    console.log('Growth percentage:', '{{ growth_result.growth_percentage_formatted }}');
+    {% endif %}
+    setTimeout(function() {
+      $('#growthModal').modal('show');
+    }, 300);
+  });
+  {% endif %}
+  
+  // Debug: Log when modal events fire
+  $('#growthModal').on('show.bs.modal', function() {
+    console.log('Growth modal is showing');
+  });
+  
+  $('#growthModal').on('shown.bs.modal', function() {
+    console.log('Growth modal shown');
+  });
+  
+  // Auto-open XGBoost growth modal if there's a prediction result
+  {% if xgboost_growth_result %}
+  $(document).ready(function() {
+    console.log('Opening XGBoost growth modal...');
+    setTimeout(function() {
+      $('#xgboostGrowthModal').modal('show');
+    }, 300);
   });
   {% endif %}
 </script>
