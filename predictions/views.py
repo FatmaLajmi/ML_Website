@@ -17,10 +17,12 @@ def campaign_conversion_view(request):
         if form.is_valid():
             # Prepare input data
             input_data = {
+                'company': form.cleaned_data['company'],
                 'campaign_type': form.cleaned_data['campaign_type'],
                 'target_audience': form.cleaned_data['target_audience'],
                 'duration': form.cleaned_data['duration'],
                 'channel_used': form.cleaned_data['channel_used'],
+                'location': form.cleaned_data['location'],
                 'language': form.cleaned_data['language'],
                 'customer_segment': form.cleaned_data['customer_segment'],
             }
@@ -33,12 +35,12 @@ def campaign_conversion_view(request):
                 try:
                     CampaignPrediction.objects.create(
                         user=request.user,
-                        company='N/A',  # No longer collected
+                        company=input_data['company'],
                         campaign_type=input_data['campaign_type'],
                         target_audience=input_data['target_audience'],
                         duration=input_data['duration'],
                         channel_used=input_data['channel_used'],
-                        location='N/A',  # No longer collected
+                        location=input_data['location'],
                         language=input_data['language'],
                         customer_segment=input_data['customer_segment'],
                         prediction=prediction_result['prediction'],

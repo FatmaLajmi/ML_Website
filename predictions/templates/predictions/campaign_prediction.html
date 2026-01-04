@@ -45,6 +45,28 @@
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
+                  <label for="{{ form.company.id_for_label }}">Company *</label>
+                  {{ form.company }}
+                  {% if form.company.errors %}
+                    <small class="text-danger">{{ form.company.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.location.id_for_label }}">Location *</label>
+                  {{ form.location }}
+                  {% if form.location.errors %}
+                    <small class="text-danger">{{ form.location.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
                   <label for="{{ form.campaign_type.id_for_label }}">Campaign Type *</label>
                   {{ form.campaign_type }}
                   {% if form.campaign_type.errors %}

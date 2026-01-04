@@ -80,6 +80,24 @@ class RevenueGrowthPredictionForm(forms.Form):
 class CampaignConversionPredictionForm(forms.Form):
     """Form for marketing campaign conversion prediction"""
     
+    COMPANY_CHOICES = [
+        ('', 'Select Company'),
+        ('Innovate Industries', 'Innovate Industries'),
+        ('NexGen Systems', 'NexGen Systems'),
+        ('Alpha Innovations', 'Alpha Innovations'),
+        ('DataTech Solutions', 'DataTech Solutions'),
+        ('TechCorp', 'TechCorp'),
+    ]
+    
+    LOCATION_CHOICES = [
+        ('', 'Select Location'),
+        ('Chicago', 'Chicago'),
+        ('Houston', 'Houston'),
+        ('Los Angeles', 'Los Angeles'),
+        ('Miami', 'Miami'),
+        ('New York', 'New York'),
+    ]
+    
     CAMPAIGN_TYPE_CHOICES = [
         ('', 'Select Campaign Type'),
         ('Email', 'Email'),
@@ -120,10 +138,20 @@ class CampaignConversionPredictionForm(forms.Form):
         ('', 'Select Customer Segment'),
         ('Fashionistas', 'Fashionistas'),
         ('Health & Wellness', 'Health & Wellness'),
-        ('Outdoor Adventures', 'Outdoor Adventures'),
+        ('Outdoor Adventurers', 'Outdoor Adventurers'),
         ('Foodies', 'Foodies'),
         ('Tech Enthusiasts', 'Tech Enthusiasts'),
     ]
+    
+    company = forms.ChoiceField(
+        choices=COMPANY_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    location = forms.ChoiceField(
+        choices=LOCATION_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     
     campaign_type = forms.ChoiceField(
         choices=CAMPAIGN_TYPE_CHOICES,

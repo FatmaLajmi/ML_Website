@@ -100,8 +100,8 @@ class CampaignConversionPredictor:
         categorical_cols = ['Company', 'Campaign_Type', 'Target_Audience', 
                           'Channel_Used', 'Location', 'Language', 'Customer_Segment']
         
-        # One-hot encode
-        df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+        # One-hot encode WITHOUT drop_first (model was trained this way)
+        df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=False)
         
         print(f"DEBUG - Encoded features: {df_encoded.columns.tolist()}")
         print(f"DEBUG - Duration before scaling: {df_encoded['Duration'].values[0]}")
@@ -154,37 +154,37 @@ class CampaignConversionPredictor:
         channels = ['Email', 'Facebook', 'Google Ads', 'Instagram', 'Website', 'YouTube']
         locations = ['Chicago', 'Houston', 'Los Angeles', 'Miami', 'New York']
         languages = ['English', 'French', 'Spanish', 'Mandarin', 'German']
-        segments = ['Fashionistas', 'Health & Wellness', 'Outdoor Adventures', 'Foodies', 'Tech Enthusiasts']
+        segments = ['Fashionistas', 'Health & Wellness', 'Outdoor Adventurers', 'Foodies', 'Tech Enthusiasts']
         
         features = ['Duration']  # Start with numeric feature
         
-        # Add one-hot encoded features (drop_first=True means first alphabetically is dropped)
-        # Company (drop Alpha Innovations as it's first alphabetically)
-        for val in sorted(companies)[1:]:
+        # Add one-hot encoded features (NO drop_first, model has all categories)
+        # Company (all values)
+        for val in sorted(companies):
             features.append(f'Company_{val}')
         
-        # Campaign_Type (drop Email as it's first alphabetically)
-        for val in sorted(campaign_types)[1:]:
+        # Campaign_Type (all values)
+        for val in sorted(campaign_types):
             features.append(f'Campaign_Type_{val}')
         
-        # Target_Audience (drop All Ages)
-        for val in sorted(target_audiences)[1:]:
+        # Target_Audience (all values)
+        for val in sorted(target_audiences):
             features.append(f'Target_Audience_{val}')
         
-        # Channel_Used (drop Email)
-        for val in sorted(channels)[1:]:
+        # Channel_Used (all values)
+        for val in sorted(channels):
             features.append(f'Channel_Used_{val}')
         
-        # Location (drop Chicago as it's first alphabetically)
-        for val in sorted(locations)[1:]:
+        # Location (all values)
+        for val in sorted(locations):
             features.append(f'Location_{val}')
         
-        # Language (drop English)
-        for val in sorted(languages)[1:]:
+        # Language (all values)
+        for val in sorted(languages):
             features.append(f'Language_{val}')
         
-        # Customer_Segment (drop Fashionistas)
-        for val in sorted(segments)[1:]:
+        # Customer_Segment (all values)
+        for val in sorted(segments):
             features.append(f'Customer_Segment_{val}')
         
         return features
