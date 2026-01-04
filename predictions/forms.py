@@ -41,10 +41,55 @@ class RemoteWorkPredictionForm(forms.Form):
 
 
 class DegreePredictionForm(forms.Form):
-    """Form for required degree prediction"""
-    job_title = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Job Title'}))
-    industry = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Industry'}))
-    experience_years = forms.IntegerField(min_value=0, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Years of experience'}))
+    """Form for degree requirement prediction using XGBoost model"""
+    skill_count = forms.IntegerField(
+        min_value=0,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Number of skills required (e.g., 5)'
+        }),
+        help_text='Total number of skills mentioned in the job posting'
+    )
+    job_title_short = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., Software Engineer, Data Analyst'
+        }),
+        help_text='Simplified job title'
+    )
+    job_via = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., LinkedIn, Indeed, Company Website'
+        }),
+        help_text='Platform where the job was posted'
+    )
+    company_name = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., Google, Microsoft, Startup Inc.'
+        }),
+        help_text='Name of the hiring company'
+    )
+    job_country = forms.CharField(
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., United States, Canada, UK'
+        }),
+        help_text='Country where the job is located'
+    )
+    search_location = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., New York, San Francisco, Remote'
+        }),
+        help_text='Specific location or city for the job'
+    )
 
 
 class BenefitsPredictionForm(forms.Form):

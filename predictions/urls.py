@@ -6,4 +6,6 @@ app_name = 'predictions'
 urlpatterns = [
     path('job-seekers/', views.job_seeker_predictions_view, name='job_seeker_predictions'),
     path('employers/', views.employer_predictions_view, name='employer_predictions'),
+    path('degree-mention/', views.degree_mention_view, name='degree_mention'),
+    # path('employer-growth/', views.employer_growth_view, name='employer_growth'),  # Removed - now handled by modal
 ]

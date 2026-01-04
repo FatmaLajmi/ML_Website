@@ -12,8 +12,8 @@ urlpatterns = [
     path('', TemplateView.as_view(template_name='index.html'), name='home'),
     path('accounts/', include('accounts.urls')),
     path('jobs/', include('jobs.urls')),
-    # path('predictions/', include('predictions.urls')),
-    # path('analytics/', include('analytics.urls')),
+    path('predictions/', include('predictions.urls')),
+    # path('analytics/', include('analytics.urls')),  # Commented out - analytics views incomplete
 ]
 
 # Serve media files in development
