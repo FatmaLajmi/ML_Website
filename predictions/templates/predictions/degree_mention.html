@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Degree Mention Prediction - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>Job Degree Requirement Prediction</h3>
+          <p>Find out if a job posting mentions degree requirements</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Content Section Start -->
+<section id="content" class="section-padding">
+  <div class="container">
+    
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        
+        <!-- Prediction Result -->
+        {% if result %}
+        <div class="card mb-4">
+          <div class="card-header bg-{{ result.degree_mentioned|yesno:'warning,success' }} text-white">
+            <h4 class="mb-0">
+              <i class="lni-{{ result.degree_mentioned|yesno:'graduation,thumbs-up' }}"></i>
+              Prediction Result
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="result-box text-center py-4">
+              <h2 class="mb-3">{{ result.prediction }}</h2>
+              <p class="lead mb-2">
+                <strong>Confidence:</strong> {{ result.confidence }}
+              </p>
+              <hr>
+              <p class="text-muted">
+                {% if result.degree_mentioned %}
+                  <i class="lni-graduation"></i>
+                  This job posting likely mentions degree or educational requirements.
+                  Candidates should check if they meet the educational qualifications.
+                {% else %}
+                  <i class="lni-thumbs-up"></i>
+                  This job posting likely does not mention specific degree requirements.
+                  Candidates can focus on skills and experience instead.
+                {% endif %}
+              </p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Prediction Form -->
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+              <i class="lni-search"></i>
+              Enter Job Details
+            </h4>
+          </div>
+          <div class="card-body">
+            <form method="post" action="{% url 'predictions:degree_mention' %}">
+              {% csrf_token %}
+              
+              <!-- Skill Count (Required) -->
+              <div class="form-group">
+                <label for="id_skill_count">
+                  Number of Skills <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="number" 
+                  name="skill_count" 
+                  id="id_skill_count"
+                  class="form-control" 
+                  placeholder="e.g., 5"
+                  min="0"
+                  required
+                  value="{{ form_data.skill_count|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  How many skills are listed in the job posting?
+                </small>
+              </div>
+              
+              <!-- Job Title (Required) -->
+              <div class="form-group">
+                <label for="id_job_title_short">
+                  Job Title <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  name="job_title_short" 
+                  id="id_job_title_short"
+                  class="form-control" 
+                  placeholder="e.g., Software Engineer, Data Analyst"
+                  required
+                  value="{{ form_data.job_title_short|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Simplified job title from the posting
+                </small>
+              </div>
+              
+              <!-- Job Via (Required) -->
+              <div class="form-group">
+                <label for="id_job_via">
+                  Posting Platform <span class="text-danger">*</span>
+                </label>
+                <input 
+                  type="text" 
+                  name="job_via" 
+                  id="id_job_via"
+                  class="form-control" 
+                  placeholder="e.g., LinkedIn, Indeed, Company Website"
+                  required
+                  value="{{ form_data.job_via|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Where was this job posted?
+                </small>
+              </div>
+              
+              <!-- Optional Fields -->
+              <h5 class="mt-4 mb-3">Optional Information</h5>
+              
+              <!-- Company Name -->
+              <div class="form-group">
+                <label for="id_company_name">Company Name</label>
+                <input 
+                  type="text" 
+                  name="company_name" 
+                  id="id_company_name"
+                  class="form-control" 
+                  placeholder="e.g., Google, Microsoft, Startup Inc."
+                  value="{{ form_data.company_name|default:'' }}"
+                >
+              </div>
+              
+              <!-- Job Country -->
+              <div class="form-group">
+                <label for="id_job_country">Job Country</label>
+                <input 
+                  type="text" 
+                  name="job_country" 
+                  id="id_job_country"
+                  class="form-control" 
+                  placeholder="e.g., United States, Canada, UK"
+                  value="{{ form_data.job_country|default:'' }}"
+                >
+              </div>
+              
+              <!-- Search Location -->
+              <div class="form-group">
+                <label for="id_search_location">Location</label>
+                <input 
+                  type="text" 
+                  name="search_location" 
+                  id="id_search_location"
+                  class="form-control" 
+                  placeholder="e.g., New York, San Francisco, Remote"
+                  value="{{ form_data.search_location|default:'' }}"
+                >
+              </div>
+              
+              <!-- Submit Button -->
+              <div class="form-group text-center mt-4">
+                <button type="submit" class="btn btn-common btn-lg">
+                  <i class="lni-rocket"></i> Predict Degree Requirement
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4">
+          <h5><i class="lni-information"></i> How it works</h5>
+          <p class="mb-0">
+            Our XGBoost machine learning model analyzes job posting characteristics to predict
+            whether the posting mentions degree or educational requirements. This helps job seekers
+            quickly identify positions where formal education may or may not be emphasized.
+          </p>
+        </div>
+        
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content Section End -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+  
+  .card-header {
+    border-radius: 8px 8px 0 0 !important;
+    padding: 1.25rem;
+  }
+  
+  .result-box {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 2rem;
+  }
+  
+  .result-box h2 {
+    font-weight: 700;
+    color: #333;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-control {
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+  }
+  
+  .form-control:focus {
+    border-color: #4c40ed;
+    box-shadow: 0 0 0 0.2rem rgba(76, 64, 237, 0.25);
+  }
+  
+  .btn-common {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 5px;
+  }
+  
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 80px 0 60px;
+  }
+  
+  .page-header h3 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+  
+  .page-header p {
+    color: rgba(255,255,255,0.9);
+    font-size: 1.1rem;
+  }
+</style>
+{% endblock %}

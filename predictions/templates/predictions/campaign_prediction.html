@@ -1,0 +1,288 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Marketing Campaign Prediction - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>Marketing Campaign Conversion Prediction</h3>
+          <p>Optimize campaign targeting and ROI with AI-powered predictions</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Content section Start --> 
+<section id="content" class="section-padding">
+  <div class="container">
+    <div class="row">
+      <!-- Prediction Form -->
+      <div class="col-lg-8 col-md-12 col-xs-12">
+        <div class="box">
+          <h3 class="mb-4"><i class="lni-bullhorn"></i> Campaign Details</h3>
+          
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+            {% endfor %}
+          {% endif %}
+          
+          <form method="post" class="campaign-form">
+            {% csrf_token %}
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.company.id_for_label }}">Company *</label>
+                  {{ form.company }}
+                  {% if form.company.errors %}
+                    <small class="text-danger">{{ form.company.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.location.id_for_label }}">Location *</label>
+                  {{ form.location }}
+                  {% if form.location.errors %}
+                    <small class="text-danger">{{ form.location.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.campaign_type.id_for_label }}">Campaign Type *</label>
+                  {{ form.campaign_type }}
+                  {% if form.campaign_type.errors %}
+                    <small class="text-danger">{{ form.campaign_type.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.target_audience.id_for_label }}">Target Audience *</label>
+                  {{ form.target_audience }}
+                  {% if form.target_audience.errors %}
+                    <small class="text-danger">{{ form.target_audience.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.channel_used.id_for_label }}">Channel Used *</label>
+                  {{ form.channel_used }}
+                  {% if form.channel_used.errors %}
+                    <small class="text-danger">{{ form.channel_used.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.duration.id_for_label }}">Campaign Duration (days) *</label>
+                  {{ form.duration }}
+                  <small class="form-text text-muted">{{ form.duration.help_text }}</small>
+                  {% if form.duration.errors %}
+                    <small class="text-danger">{{ form.duration.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.language.id_for_label }}">Language *</label>
+                  {{ form.language }}
+                  {% if form.language.errors %}
+                    <small class="text-danger">{{ form.language.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.customer_segment.id_for_label }}">Customer Segment *</label>
+                  {{ form.customer_segment }}
+                  {% if form.customer_segment.errors %}
+                    <small class="text-danger">{{ form.customer_segment.errors.0 }}</small>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group mt-3">
+              <button type="submit" class="btn btn-common btn-lg btn-block">
+                <i class="lni-bar-chart"></i> Predict Campaign Conversion
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Prediction Results -->
+      <div class="col-lg-4 col-md-12 col-xs-12">
+        {% if prediction_result %}
+          {% if prediction_result.success %}
+            <div class="box">
+              <h3 class="mb-3"><i class="lni-stats-up"></i> Prediction Results</h3>
+              
+              <!-- Prediction Card -->
+              <div class="prediction-card {% if prediction_result.prediction == 'High' %}bg-success{% else %}bg-warning{% endif %} text-white p-4 mb-3" style="border-radius: 10px;">
+                <h2 class="text-center mb-0">{{ prediction_result.prediction }} Conversion</h2>
+                <p class="text-center mb-0"><small>{{ prediction_result.confidence }}% confidence</small></p>
+              </div>
+              
+              <!-- Probability Section -->
+              <div class="probability-section mb-4">
+                <h5 class="mb-3">Probability Breakdown</h5>
+                
+                <!-- High Conversion -->
+                <div class="mb-3">
+                  <div class="d-flex justify-content-between mb-1">
+                    <span><strong>High Conversion:</strong></span>
+                    <span>{{ prediction_result.probability_high }}%</span>
+                  </div>
+                  <div class="progress" style="height: 25px; border-radius: 10px;">
+                    <div class="progress-bar bg-success" 
+                         role="progressbar"
+                         style="width: {{ prediction_result.probability_high }}%"
+                         aria-valuenow="{{ prediction_result.probability_high }}"
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                      {{ prediction_result.probability_high }}%
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Low Conversion -->
+                <div>
+                  <div class="d-flex justify-content-between mb-1">
+                    <span><strong>Low Conversion:</strong></span>
+                    <span>{{ prediction_result.probability_low }}%</span>
+                  </div>
+                  <div class="progress" style="height: 25px; border-radius: 10px;">
+                    <div class="progress-bar bg-warning" 
+                         role="progressbar"
+                         style="width: {{ prediction_result.probability_low }}%"
+                         aria-valuenow="{{ prediction_result.probability_low }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                      {{ prediction_result.probability_low }}%
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Recommendations -->
+              <div class="recommendations-section">
+                <h5 class="mb-3"><i class="lni-bulb"></i> Recommendations</h5>
+                <ul class="list-unstyled">
+                  {% for recommendation in prediction_result.recommendations %}
+                    <li class="mb-2">
+                      <i class="lni-checkmark-circle"></i> {{ recommendation }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              </div>
+            </div>
+          {% elif prediction_result.error %}
+            <div class="alert alert-danger">
+              <strong>Error:</strong> {{ prediction_result.error }}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="box">
+            <h4><i class="lni-information"></i> How it works</h4>
+            <p>Our AI model analyzes your campaign parameters to predict conversion rates:</p>
+            <ul>
+              <li>Campaign type and target audience alignment</li>
+              <li>Channel effectiveness for your segment</li>
+              <li>Duration optimization</li>
+              <li>Location and language targeting</li>
+            </ul>
+            <p class="text-muted"><small>Fill in the form to get your prediction.</small></p>
+          </div>
+        {% endif %}
+
+        <!-- Previous Predictions -->
+        {% if previous_predictions %}
+          <div class="box mt-4">
+            <h4 class="mb-3"><i class="lni-reload"></i> Recent Predictions</h4>
+            <div class="list-group">
+              {% for pred in previous_predictions|slice:":5" %}
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between">
+                    <strong>{{ pred.company }}</strong>
+                    <span class="badge {% if pred.prediction == 'High' %}badge-success{% else %}badge-warning{% endif %}">
+                      {{ pred.prediction }}
+                    </span>
+                  </div>
+                  <small class="text-muted">
+                    {{ pred.campaign_type }} | {{ pred.channel_used }}<br>
+                    {{ pred.created_at|date:"M d, Y" }}
+                  </small>
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content section End --> 
+
+<style>
+.campaign-form .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.campaign-form label {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.prediction-card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.probability-section .progress {
+  border-radius: 10px;
+}
+
+.recommendations-section li {
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.recommendations-section li:last-child {
+  border-bottom: none;
+}
+
+.list-group-item {
+  border-left: 3px solid #007bff;
+}
+</style>
+{% endblock %}

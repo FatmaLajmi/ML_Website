@@ -71,6 +71,8 @@
                   <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="predictionDropdown"
                       role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'predictions:job_seeker_predictions' %}">
                       <i class="lni-brain"></i> Prediction Models
                     </a>
 
@@ -93,10 +95,16 @@
                       <i class="lni-plus"></i> Post a New Job
                     </a>
                   </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
                   <li class="nav-item">
-                    <a class="nav-link" href="#">
+                    <a class="nav-link" href="{% url 'predictions:employer_predictions' %}">
                       <i class="lni-brain"></i> Prediction Models
                     </a>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="{% url 'predictions:campaign_conversion' %}"><i class="lni-bullhorn"></i> Campaign Conversion</a></li>
+                      <li><a class="dropdown-item" href="{% url 'predictions:employer_predictions' %}"><i class="lni-bar-chart"></i> Other Predictions</a></li>
+                    </ul>
                   </li>
                 {% endif %}
                 
@@ -226,8 +234,8 @@
     <script src="{% static 'js/jquery.slicknav.js' %}"></script>     
     <script src="{% static 'js/jquery.counterup.min.js' %}"></script>      
     <script src="{% static 'js/waypoints.min.js' %}"></script>     
-    <script src="{% static 'js/form-validator.min.js' %}"></script>
-    <script src="{% static 'js/contact-form-script.js' %}"></script>   
+    <!-- <script src="{% static 'js/form-validator.min.js' %}"></script> -->
+    <!-- <script src="{% static 'js/contact-form-script.js' %}"></script> -->   
     <script src="{% static 'js/main.js' %}"></script>
     
     {% block extra_js %}{% endblock %}
