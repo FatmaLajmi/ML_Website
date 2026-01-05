@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Jobs - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>My Job Postings</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Content section Start --> 
+<section id="content" class="section-padding">
+  <div class="container">
+    <div class="row mb-4">
+      <div class="col-12 text-right">
+        <a href="{% url 'jobs:add_job' %}" class="btn btn-common"><i class="lni-plus"></i> Post New Job</a>
+      </div>
+    </div>
+    
+    <div class="row">
+      <div class="col-12">
+        {% if jobs %}
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Job Title</th>
+                  <th>Location</th>
+                  <th>Type</th>
+                  <th>Status</th>
+                  <th>Applications</th>
+                  <th>Posted Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for job in jobs %}
+                <tr>
+                  <td><a href="{% url 'jobs:job_detail' job.id %}">{{ job.title }}</a></td>
+                  <td>{{ job.location }}</td>
+                  <td>{{ job.get_job_type_display }}</td>
+                  <td>
+                    <span class="badge badge-{{ job.approved|yesno:'success,warning' }}">
+                      {{ job.approved|yesno:'Approved,Pending' }}
+                    </span>
+                  </td>
+                  <td>{{ job.applications.count }} applicant{{ job.applications.count|pluralize }}</td>
+                  <td>{{ job.posted_at|date:"d M, Y" }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info text-center">
+            <h4>You haven't posted any jobs yet</h4>
+            <p>Start attracting top talent by posting your first job!</p>
+            <a href="{% url 'jobs:add_job' %}" class="btn btn-common mt-3">Post Your First Job</a>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content section End -->
+{% endblock %}

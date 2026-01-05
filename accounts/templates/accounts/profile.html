@@ -1,0 +1,480 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Profile - JobML Platform{% endblock %}
+
+{% block extra_css %}
+<style>
+  .skill-card {
+    display: inline-block;
+    padding: 10px 18px;
+    margin: 5px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: all 0.3s;
+    background-color: white;
+  }
+  .skill-card:hover {
+    border-color: #ff6b6b;
+    background-color: #fff5f5;
+    transform: scale(1.05);
+  }
+  .skill-card.selected {
+    background-color: #ff6b6b;
+    color: white;
+    border-color: #ff6b6b;
+  }
+  .skill-card input[type="checkbox"] {
+    display: none;
+  }
+  .skill-checkbox-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+  }
+  .selected-skills-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    min-height: 50px;
+  }
+  .selected-skills-wrapper:empty::before {
+    content: 'No skills selected yet';
+    color: #999;
+    font-style: italic;
+  }
+  .all-skills-container {
+    display: none;
+  }
+  .all-skills-container.show {
+    display: block;
+  }
+  .toggle-skills-btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 10px;
+  }
+  .toggle-skills-btn:hover {
+    background-color: #5a6268;
+  }
+  .custom-file-upload {
+    display: inline-block;
+    padding: 10px 20px;
+    cursor: pointer;
+    background-color: #ff6b6b;
+    color: white;
+    border-radius: 4px;
+    transition: all 0.3s;
+    margin-bottom: 10px;
+  }
+  .custom-file-upload:hover {
+    background-color: #ff5252;
+  }
+  .custom-file-upload i {
+    margin-right: 8px;
+  }
+  input[type="file"] {
+    display: none;
+  }
+  .file-info {
+    margin-top: 10px;
+    color: #666;
+    font-size: 14px;
+  }
+  .profile-header {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 5px;
+    margin-bottom: 30px;
+  }
+  .profile-header h4 {
+    margin: 0;
+    color: #333;
+  }
+  .profile-header p {
+    margin: 5px 0 0 0;
+    color: #666;
+  }
+  
+  /* Form styling */
+  .form-control {
+    border-radius: 4px;
+  }
+  
+  textarea {
+    min-height: 120px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>My Profile</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Content section Start --> 
+<section id="content" class="section-padding">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags }} alert-dismissible fade show">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+          </div>
+          {% endfor %}
+        {% endif %}
+        
+        <div class="profile-header">
+          <h4>{{ user.get_full_name|default:user.username }}</h4>
+          <p><i class="lni-envelope"></i> {{ user.email }}</p>
+          <p><i class="lni-user"></i> {{ user.get_role_display }}</p>
+          <p><i class="lni-calendar"></i> Member since {{ user.date_joined|date:"F Y" }}</p>
+        </div>
+        
+        <div class="page-login-form box">
+          <h3>Update Your Profile</h3>
+          
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            {% if form.non_field_errors %}
+            <div class="alert alert-danger">
+              {{ form.non_field_errors }}
+            </div>
+            {% endif %}
+            
+            <!-- Basic User Info -->
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>First Name</label>
+                  <input type="text" name="first_name" class="form-control" value="{{ user.first_name }}" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label>Last Name</label>
+                  <input type="text" name="last_name" class="form-control" value="{{ user.last_name }}" required>
+                </div>
+              </div>
+            </div>
+            
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" name="email" class="form-control" value="{{ user.email }}" required>
+            </div>
+            
+            <hr>
+            
+            {% if user.role == 'job_seeker' %}
+              <!-- Job Seeker Profile Fields -->
+              <h4 class="mb-3">Professional Information</h4>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="{{ form.education_level.id_for_label }}">Education Level</label>
+                    {{ form.education_level }}
+                    {% if form.education_level.errors %}
+                    <div class="invalid-feedback d-block">{{ form.education_level.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="{{ form.years_experience.id_for_label }}">Years of Experience</label>
+                    {{ form.years_experience }}
+                    {% if form.years_experience.errors %}
+                    <div class="invalid-feedback d-block">{{ form.years_experience.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label><i class="lni-tag"></i> Your Skills</label>
+                <div class="selected-skills-wrapper" id="selected-skills">
+                  <!-- Selected skills will appear here -->
+                </div>
+                
+                <button type="button" class="toggle-skills-btn" id="toggle-skills-btn">
+                  <i class="lni-plus"></i> Add/Remove Skills
+                </button>
+                
+                <div class="all-skills-container" id="all-skills-container">
+                  <div class="skill-checkbox-wrapper">
+                    {% for skill in form.skills %}
+                      <div class="skill-card" data-skill-id="{{ skill.id_for_label }}">
+                        {{ skill.tag }}
+                        <label for="{{ skill.id_for_label }}" style="margin: 0; cursor: pointer; padding: 0; user-select: none;">
+                          {{ skill.choice_label }}
+                        </label>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </div>
+                {% if form.skills.errors %}
+                <div class="invalid-feedback d-block">{{ form.skills.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.bio.id_for_label }}">Bio / About You</label>
+                {{ form.bio }}
+                {% if form.bio.errors %}
+                <div class="invalid-feedback d-block">{{ form.bio.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="{{ form.phone.id_for_label }}">Phone Number</label>
+                    {{ form.phone }}
+                    {% if form.phone.errors %}
+                    <div class="invalid-feedback d-block">{{ form.phone.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="{{ form.location.id_for_label }}">Location</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                    <div class="invalid-feedback d-block">{{ form.location.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.resume.id_for_label }}">Resume (PDF)</label>
+                <div>
+                  <label for="{{ form.resume.id_for_label }}" class="custom-file-upload">
+                    <i class="lni-upload"></i> Choose Resume File
+                  </label>
+                  {{ form.resume }}
+                  <div class="file-info" id="file-info">
+                    {% if profile.resume %}
+                      Current: <strong>{{ profile.resume.name|slice:"8:" }}</strong>
+                    {% else %}
+                      No file selected
+                    {% endif %}
+                  </div>
+                </div>
+                {% if form.resume.errors %}
+                <div class="invalid-feedback d-block">{{ form.resume.errors }}</div>
+                {% endif %}
+                {% if profile.resume %}
+                <div class="mt-2">
+                  <a href="{{ profile.resume.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                    <i class="lni-download"></i> View Current Resume
+                  </a>
+                </div>
+                {% endif %}
+              </div>
+              
+            {% elif user.role == 'employer' %}
+              <!-- Employer Profile Fields -->
+              <h4 class="mb-3">Company Information</h4>
+              
+              <div class="form-group">
+                <label for="{{ form.company_name.id_for_label }}">Company Name</label>
+                {{ form.company_name }}
+                {% if form.company_name.errors %}
+                <div class="invalid-feedback d-block">{{ form.company_name.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="{{ form.industry.id_for_label }}">Industry</label>
+                    {{ form.industry }}
+                    {% if form.industry.errors %}
+                    <div class="invalid-feedback d-block">{{ form.industry.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="{{ form.company_size.id_for_label }}">Company Size</label>
+                    {{ form.company_size }}
+                    {% if form.company_size.errors %}
+                    <div class="invalid-feedback d-block">{{ form.company_size.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.website.id_for_label }}">Company Website</label>
+                {{ form.website }}
+                {% if form.website.errors %}
+                <div class="invalid-feedback d-block">{{ form.website.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="form-group">
+                <label for="{{ form.company_description.id_for_label }}">Company Description</label>
+                {{ form.company_description }}
+                {% if form.company_description.errors %}
+                <div class="invalid-feedback d-block">{{ form.company_description.errors }}</div>
+                {% endif %}
+              </div>
+              
+              <div class="row">
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="{{ form.location.id_for_label }}">Location</label>
+                    {{ form.location }}
+                    {% if form.location.errors %}
+                    <div class="invalid-feedback d-block">{{ form.location.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                    <label for="{{ form.contact_phone.id_for_label }}">Contact Phone</label>
+                    {{ form.contact_phone }}
+                    {% if form.contact_phone.errors %}
+                    <div class="invalid-feedback d-block">{{ form.contact_phone.errors }}</div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-common log-btn mt-3">
+              <i class="lni-save"></i> Update Profile
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content section End -->
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const toggleBtn = document.getElementById('toggle-skills-btn');
+    const allSkillsContainer = document.getElementById('all-skills-container');
+    const selectedSkillsWrapper = document.getElementById('selected-skills');
+    
+    // Toggle skills container
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function() {
+        allSkillsContainer.classList.toggle('show');
+        const icon = this.querySelector('i');
+        if (allSkillsContainer.classList.contains('show')) {
+          icon.className = 'lni-minus';
+          this.innerHTML = '<i class="lni-minus"></i> Hide Skills';
+        } else {
+          icon.className = 'lni-plus';
+          this.innerHTML = '<i class="lni-plus"></i> Add/Remove Skills';
+        }
+      });
+    }
+    
+    // Skill card interaction
+    document.querySelectorAll('.skill-card').forEach(card => {
+      const checkbox = card.querySelector('input[type="checkbox"]');
+      
+      // Make the entire card clickable
+      card.addEventListener('click', function(e) {
+        if (e.target.tagName !== 'BUTTON' && e.target.type !== 'submit') {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        checkbox.checked = !checkbox.checked;
+        updateSkillDisplay();
+      });
+      
+      // Prevent label click from double-triggering
+      const label = card.querySelector('label');
+      if (label) {
+        label.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+        });
+      }
+    });
+    
+    // Update skill display
+    function updateSkillDisplay() {
+      // Clear selected skills display
+      selectedSkillsWrapper.innerHTML = '';
+      
+      // Update all skill cards and populate selected skills
+      document.querySelectorAll('.skill-card').forEach(card => {
+        const checkbox = card.querySelector('input[type="checkbox"]');
+        
+        if (checkbox.checked) {
+          card.classList.add('selected');
+          
+          // Clone the card for the selected skills area
+          const selectedCard = card.cloneNode(true);
+          selectedCard.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            // Uncheck the original checkbox
+            checkbox.checked = false;
+            updateSkillDisplay();
+          });
+          selectedSkillsWrapper.appendChild(selectedCard);
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+    }
+    
+    // Initialize skill display
+    updateSkillDisplay();
+    
+    // File upload display
+    const fileInput = document.querySelector('input[type="file"]');
+    const fileInfo = document.getElementById('file-info');
+    
+    if (fileInput && fileInfo) {
+      fileInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
+          const fileName = this.files[0].name;
+          const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
+          fileInfo.innerHTML = `Selected: <strong>${fileName}</strong> (${fileSize} MB)`;
+        }
+      });
+    }
+  });
+</script>
+{% endblock %}

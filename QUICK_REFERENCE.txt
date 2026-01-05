@@ -1,0 +1,136 @@
+╔══════════════════════════════════════════════════════════════════════╗
+║         DEGREE PREDICTION INTEGRATION - QUICK REFERENCE              ║
+╚══════════════════════════════════════════════════════════════════════╝
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ INSTALLATION (First Time Setup)                                      │
+└──────────────────────────────────────────────────────────────────────┘
+  1. cd d:\ML_BI_WEBSITE\ML_Website
+  2. pip install -r requirements.txt
+  3. cat test_degree_prediction.py | python manage.py shell
+  4. python manage.py runserver
+  5. Open: http://localhost:8000/predictions/job-seekers/
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ FILE LOCATIONS                                                        │
+└──────────────────────────────────────────────────────────────────────┘
+  Model Files:
+    • ml_models/models/xgb_classifier_model(jojo).pkl
+    • ml_models/models/xgb_features(jojo).pkl
+  
+  Code Files:
+    • ml_models/predictors/degree_predictor.py
+    • predictions/forms.py (DegreePredictionForm)
+    • predictions/views.py (job_seeker_predictions_view)
+    • predictions/templates/predictions/jobSeekersPredictions.html
+  
+  Documentation:
+    • ml_models/models/DEGREE_PREDICTION_GUIDE.md
+    • SETUP_SUMMARY.md
+    • ARCHITECTURE_OVERVIEW.txt
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ MODEL FEATURES (Required Input)                                      │
+└──────────────────────────────────────────────────────────────────────┘
+  1. skill_count       → Number (e.g., 5)
+  2. job_title_short   → Text (e.g., "Software Engineer")
+  3. job_via          → Text (e.g., "LinkedIn")
+  4. company_name     → Text (e.g., "Google")
+  5. job_country      → Text (e.g., "United States")
+  6. search_location  → Text (e.g., "San Francisco")
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ QUICK TEST                                                            │
+└──────────────────────────────────────────────────────────────────────┘
+  # In Django shell (python manage.py shell)
+  from ml_models.predictors.degree_predictor import degree_predictor
+  
+  result = degree_predictor.predict({
+      'skill_count': 5,
+      'job_title_short': 'Software Engineer',
+      'job_via': 'LinkedIn',
+      'company_name': 'Google',
+      'job_country': 'United States',
+      'search_location': 'San Francisco'
+  })
+  
+  print(result)
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ EXPECTED OUTPUT                                                       │
+└──────────────────────────────────────────────────────────────────────┘
+  {
+    'success': True,
+    'prediction': 'Degree Required',
+    'degree_required': True,
+    'confidence': '87.5%'
+  }
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ URL ACCESS                                                            │
+└──────────────────────────────────────────────────────────────────────┘
+  Development: http://localhost:8000/predictions/job-seekers/
+  Production:  https://yourdomain.com/predictions/job-seekers/
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ COMMON COMMANDS                                                       │
+└──────────────────────────────────────────────────────────────────────┘
+  Start server:     python manage.py runserver
+  Run tests:        cat test_degree_prediction.py | python manage.py shell
+  Open shell:       python manage.py shell
+  Check migrations: python manage.py showmigrations
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ TROUBLESHOOTING                                                       │
+└──────────────────────────────────────────────────────────────────────┘
+  Error: "Model is not available"
+    → Check .pkl files exist in ml_models/models/
+    → Verify file names match exactly
+  
+  Error: "ModuleNotFoundError: xgboost"
+    → Run: pip install xgboost
+  
+  Error: "ModuleNotFoundError: pandas"
+    → Run: pip install pandas
+  
+  Form not showing:
+    → Check URL: /predictions/job-seekers/
+    → Verify view in urls.py
+  
+  Prediction fails:
+    → Check all 6 fields are filled
+    → Verify skill_count is a number
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ FILES MODIFIED/CREATED                                                │
+└──────────────────────────────────────────────────────────────────────┘
+  Modified:
+    ✓ ml_models/predictors/degree_predictor.py
+    ✓ predictions/forms.py
+    ✓ predictions/views.py
+    ✓ predictions/templates/predictions/jobSeekersPredictions.html
+    ✓ requirements.txt
+  
+  Created:
+    ✓ ml_models/models/DEGREE_PREDICTION_GUIDE.md
+    ✓ test_degree_prediction.py
+    ✓ SETUP_SUMMARY.md
+    ✓ ARCHITECTURE_OVERVIEW.txt
+    ✓ QUICK_REFERENCE.txt (this file)
+
+┌──────────────────────────────────────────────────────────────────────┐
+│ SUPPORT                                                               │
+└──────────────────────────────────────────────────────────────────────┘
+  Read full documentation:
+    → ml_models/models/DEGREE_PREDICTION_GUIDE.md
+    → SETUP_SUMMARY.md
+  
+  View architecture:
+    → ARCHITECTURE_OVERVIEW.txt
+  
+  Run automated tests:
+    → cat test_degree_prediction.py | python manage.py shell
+
+╔══════════════════════════════════════════════════════════════════════╗
+║  ✓ Integration Complete - Ready to Deploy!                          ║
+╚══════════════════════════════════════════════════════════════════════╝

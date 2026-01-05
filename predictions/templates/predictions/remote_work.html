@@ -1,0 +1,276 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Remote Work Prediction - Job Seekers - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>Remote Work Prediction</h3>
+          <p>Predict whether a job posting offers Remote or On-site work</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End -->
+
+<!-- Content Section Start -->
+<section id="content" class="section-padding">
+  <div class="container">
+
+    <!-- Messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+
+        <!-- Prediction Result -->
+        {% if result %}
+        <div class="card mb-4">
+          <div class="card-header bg-{% if result.prediction == 'Remote' %}success{% else %}warning{% endif %} text-white">
+            <h4 class="mb-0">
+              <i class="lni-{% if result.prediction == 'Remote' %}laptop-phone{% else %}map-marker{% endif %}"></i>
+              Prediction Result
+            </h4>
+          </div>
+
+          <div class="card-body">
+            <div class="result-box text-center py-4">
+              <h2 class="mb-3">{{ result.prediction }}</h2>
+
+              <p class="lead mb-2">
+                <strong>Remote Probability:</strong> {{ result.proba_remote_pct }}%
+              </p>
+
+              <hr>
+
+              <p class="text-muted mb-0">
+                {% if result.prediction == 'Remote' %}
+                  <i class="lni-laptop-phone"></i>
+                  This job posting is likely to offer remote work options based on the description and job attributes.
+                {% else %}
+                  <i class="lni-map-marker"></i>
+                  This job posting is more likely to be on-site. Consider refining the description or checking location constraints.
+                {% endif %}
+              </p>
+
+              <small class="d-block mt-3 text-muted">
+                Threshold used: {{ result.threshold }}
+              </small>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Prediction Form -->
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+              <i class="lni-search"></i>
+              Enter Job Posting Data
+            </h4>
+          </div>
+
+          <div class="card-body">
+            <form method="post" action="{% url 'predictions:remote_work' %}">
+              {% csrf_token %}
+
+              <!-- Job Title Short -->
+              <div class="form-group">
+                <label for="id_job_title_short">
+                  Job Title (Short) <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="job_title_short"
+                  id="id_job_title_short"
+                  class="form-control"
+                  placeholder="e.g., data analyst"
+                  required
+                  value="{{ form_data.job_title_short|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  A short standardized job title.
+                </small>
+              </div>
+
+              <!-- Country -->
+              <div class="form-group">
+                <label for="id_job_country">
+                  Job Country <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="job_country"
+                  id="id_job_country"
+                  class="form-control"
+                  placeholder="e.g., US, FR"
+                  required
+                  value="{{ form_data.job_country|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Country code or name depending on your training data.
+                </small>
+              </div>
+
+              <!-- Schedule Type -->
+              <div class="form-group">
+                <label for="id_job_schedule_type">
+                  Schedule Type <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="job_schedule_type"
+                  id="id_job_schedule_type"
+                  class="form-control"
+                  placeholder="e.g., Full-time, Part-time, Contractor"
+                  required
+                  value="{{ form_data.job_schedule_type|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  Contract type for the job posting.
+                </small>
+              </div>
+
+              <!-- Seniority -->
+              <div class="form-group">
+                <label for="id_job_seniority">
+                  Seniority Level <span class="text-danger">*</span>
+                </label>
+                <input
+                  type="text"
+                  name="job_seniority"
+                  id="id_job_seniority"
+                  class="form-control"
+                  placeholder="e.g., Junior, Mid, Senior, Lead"
+                  required
+                  value="{{ form_data.job_seniority|default:'' }}"
+                >
+                <small class="form-text text-muted">
+                  The seniority level of the role.
+                </small>
+              </div>
+
+              <!-- Text block -->
+              <div class="form-group">
+                <label for="id_text_block">
+                  Job Description (Text) <span class="text-danger">*</span>
+                </label>
+                <textarea
+                  name="text_block"
+                  id="id_text_block"
+                  class="form-control"
+                  rows="6"
+                  placeholder="Skills, missions, tools, responsibilities..."
+                  required
+                >{{ form_data.text_block|default:'' }}</textarea>
+                <small class="form-text text-muted">
+                  Paste a description or key skills; the model uses text signals.
+                </small>
+              </div>
+
+              <!-- Submit Button -->
+              <div class="form-group text-center mt-4">
+                <button type="submit" class="btn btn-common btn-lg">
+                  <i class="lni-laptop-phone"></i> Predict Remote Work
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4">
+          <h5><i class="lni-information"></i> How it works</h5>
+          <p class="mb-0">
+            Our classification model analyzes job attributes (title, country, contract type, seniority)
+            and the job description text to estimate the probability that a job is remote.
+            The output is a probability score and a final label (Remote / On-site) based on a threshold.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content Section End -->
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+
+  .card-header {
+    border-radius: 8px 8px 0 0 !important;
+    padding: 1.25rem;
+  }
+
+  .result-box {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 2rem;
+  }
+
+  .result-box h2 {
+    font-weight: 700;
+    color: #333;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control {
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+  }
+
+  .form-control:focus {
+    border-color: #4c40ed;
+    box-shadow: 0 0 0 0.2rem rgba(76, 64, 237, 0.25);
+  }
+
+  .btn-common {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 5px;
+  }
+
+  .page-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 80px 0 60px;
+  }
+
+  .page-header h3 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+  }
+
+  .page-header p {
+    color: rgba(255,255,255,0.9);
+    font-size: 1.1rem;
+  }
+</style>
+{% endblock %}

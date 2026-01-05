@@ -1,0 +1,377 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}ML Predictions - Job Seekers - JobML Platform{% endblock %}
+
+{% block content %}
+<!-- Page Header Start -->
+<div class="page-header">
+  <div class="container">
+    <div class="row">         
+      <div class="col-lg-12">
+        <div class="inner-header">
+          <h3>ML Predictions for Job Seekers</h3>
+          <p>Get AI-powered insights to enhance your job search</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Page Header End --> 
+
+<!-- Content section Start --> 
+<section id="content" class="section-padding">
+  <div class="container">
+    <!-- Display Django messages -->
+    {% if messages %}
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+          {{ message }}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    {% endif %}
+    
+    <div class="row">
+      <!-- Salary Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-dollar"></i>
+          </div>
+          <h4>Salary Prediction</h4>
+          <p>Estimate your expected salary based on your skills, experience, and job title.</p>
+          <button class="btn btn-common" data-toggle="modal" data-target="#salaryModal">Predict Salary</button>
+        </div>
+      </div>
+      
+      <!-- Job Title Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-briefcase"></i>
+          </div>
+          <h4>Job Title Recommendation</h4>
+          <p>Find the best job titles that match your skills and career aspirations.</p>
+          <button class="btn btn-common" data-toggle="modal" data-target="#jobTitleModal">Recommend Title</button>
+        </div>
+      </div>
+      
+      <!-- Remote Work Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-home"></i>
+          </div>
+          <h4>Remote Work Eligibility</h4>
+          <p>Check if your profile is suitable for remote work opportunities.</p>
+          <button class="btn btn-common" data-toggle="modal" data-target="#remoteWorkModal">Check Eligibility</button>
+        </div>
+      </div>
+      
+      <!-- Degree Recommendation -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-graduation"></i>
+          </div>
+          <h4>Degree Recommendation</h4>
+          <p>Get recommendations on which degree or certification would benefit your career.</p>
+          <button class="btn btn-common" data-toggle="modal" data-target="#degreeModal" onclick="console.log('Button clicked!')">Recommend Degree</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- Content section End -->
+
+<!-- Modals for Each Prediction -->
+<!-- Salary Prediction Modal -->
+<div class="modal fade" id="salaryModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Salary Prediction</h5>
+        <button type="button" class="close" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'predictions:job_seeker_predictions' %}">
+          {% csrf_token %}
+          <input type="hidden" name="prediction_type" value="salary">
+          {{ salary_form.as_p }}
+          <button type="submit" class="btn btn-common">Predict</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add similar modals for other prediction types -->
+
+<!-- Degree Prediction Modal -->
+<div class="modal fade" id="degreeModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title">
+          <i class="lni-search"></i> Degree Requirement Prediction
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Show prediction result if available -->
+        {% if degree_result %}
+        <div class="card mb-4">
+          <div class="card-header bg-{{ degree_result.degree_mentioned|yesno:'warning,success' }} text-white">
+            <h4 class="mb-0">
+              <i class="lni-{{ degree_result.degree_mentioned|yesno:'graduation,thumbs-up' }}"></i>
+              Prediction Result
+            </h4>
+          </div>
+          <div class="card-body">
+            <div class="result-box text-center py-4">
+              {% if degree_result.success %}
+                <h2 class="mb-3">{{ degree_result.prediction }}</h2>
+                <p class="lead mb-2">
+                  <strong>Confidence:</strong> {{ degree_result.confidence }}
+                </p>
+                <hr>
+                <p class="text-muted">
+                  {% if degree_result.degree_mentioned %}
+                    <i class="lni-graduation"></i>
+                    This job posting likely mentions degree or educational requirements.
+                    Candidates should check if they meet the educational qualifications.
+                  {% else %}
+                    <i class="lni-thumbs-up"></i>
+                    This job posting likely does not mention specific degree requirements.
+                    Candidates can focus on skills and experience instead.
+                  {% endif %}
+                </p>
+              {% else %}
+                <p class="text-danger mb-0">{{ degree_result.error }}</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- Degree Prediction Form -->
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+              <i class="lni-search"></i>
+              Enter Job Details
+            </h4>
+          </div>
+          <div class="card-body">
+            <form method="post" action="{% url 'predictions:job_seeker_predictions' %}" id="degreePredictionForm">
+              {% csrf_token %}
+              <input type="hidden" name="prediction_type" value="degree">
+              
+              <!-- Skill Count (Required) -->
+              <div class="form-group">
+                <label for="{{ degree_form.skill_count.id_for_label }}">
+                  Number of Skills <span class="text-danger">*</span>
+                </label>
+                {{ degree_form.skill_count }}
+                <small class="form-text text-muted">
+                  How many skills are listed in the job posting?
+                </small>
+              </div>
+              
+              <!-- Job Title (Required) -->
+              <div class="form-group">
+                <label for="{{ degree_form.job_title_short.id_for_label }}">
+                  Job Title <span class="text-danger">*</span>
+                </label>
+                {{ degree_form.job_title_short }}
+                <small class="form-text text-muted">
+                  Simplified job title from the posting
+                </small>
+              </div>
+              
+              <!-- Job Via (Required) -->
+              <div class="form-group">
+                <label for="{{ degree_form.job_via.id_for_label }}">
+                  Posting Platform <span class="text-danger">*</span>
+                </label>
+                {{ degree_form.job_via }}
+                <small class="form-text text-muted">
+                  Where was this job posted?
+                </small>
+              </div>
+              
+              <!-- Optional Fields -->
+              <h5 class="mt-4 mb-3">Optional Information</h5>
+              
+              <!-- Company Name -->
+              <div class="form-group">
+                <label for="{{ degree_form.company_name.id_for_label }}">Company Name</label>
+                {{ degree_form.company_name }}
+              </div>
+              
+              <!-- Job Country -->
+              <div class="form-group">
+                <label for="{{ degree_form.job_country.id_for_label }}">Job Country</label>
+                {{ degree_form.job_country }}
+              </div>
+              
+              <!-- Search Location -->
+              <div class="form-group">
+                <label for="{{ degree_form.search_location.id_for_label }}">Location</label>
+                {{ degree_form.search_location }}
+              </div>
+              
+              <!-- Submit Button -->
+              <div class="form-group text-center mt-4">
+                <button type="submit" class="btn btn-common btn-lg">
+                  <i class="lni-rocket"></i> Predict Degree Requirement
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4">
+          <h5><i class="lni-information"></i> How it works</h5>
+          <p class="mb-0">
+            Our XGBoost machine learning model analyzes job posting characteristics to predict
+            whether the posting mentions degree or educational requirements. This helps job seekers
+            quickly identify positions where formal education may or may not be emphasized.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+  .box {
+    padding: 28px;
+    text-align: center;
+    background: #ffffff;
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    border-radius: 8px;
+    transition: all 0.25s ease;
+  }
+
+  .box:hover {
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+    transform: translateY(-6px);
+  }
+
+  .box .icon {
+    font-size: 44px;
+    color: #4c40ed;
+    margin-bottom: 18px;
+  }
+
+  .box h4 {
+    margin-bottom: 10px;
+    font-weight: 700;
+    color: #2c3e50;
+  }
+
+  .box p {
+    color: #6c757d;
+    margin-bottom: 18px;
+  }
+
+  .modal-content {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+  }
+
+  .modal-header {
+    border-radius: 8px 8px 0 0;
+    padding: 1.25rem;
+  }
+
+  .modal-header .modal-title {
+    font-weight: 600;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-body .card {
+    border: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    border-radius: 8px;
+  }
+
+  .modal-body .card-header {
+    border-radius: 8px 8px 0 0 !important;
+    padding: 1.25rem;
+  }
+
+  .result-box {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 2rem;
+  }
+
+  .result-box h2 {
+    font-weight: 700;
+    color: #333;
+  }
+
+  .form-group label {
+    font-weight: 600;
+    color: #555;
+    margin-bottom: 0.5rem;
+  }
+
+  .form-control {
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+  }
+
+  .form-control:focus {
+    border-color: #4c40ed;
+    box-shadow: 0 0 0 0.2rem rgba(76, 64, 237, 0.25);
+  }
+
+  .btn-common {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    border-radius: 5px;
+  }
+
+  .text-danger {
+    color: #dc3545;
+  }
+
+  h5 {
+    color: #2c3e50;
+    font-weight: 600;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 0.5rem;
+  }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Auto-open degree modal if there's a prediction result
+  {% if degree_result %}
+  $(document).ready(function() {
+    $('#degreeModal').modal('show');
+  });
+  {% endif %}
+</script>
+{% endblock %}
