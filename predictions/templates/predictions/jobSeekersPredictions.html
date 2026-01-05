@@ -82,6 +82,18 @@
           <button class="btn btn-common" data-toggle="modal" data-target="#degreeModal" onclick="console.log('Button clicked!')">Recommend Degree</button>
         </div>
       </div>
+      
+      <!-- Health Insurance Prediction -->
+      <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
+        <div class="box h-100">
+          <div class="icon">
+            <i class="lni-heart"></i>
+          </div>
+          <h4>Health Insurance Prediction</h4>
+          <p>Predict if you're likely to have health insurance based on job characteristics.</p>
+          <a href="{% url 'predictions:health_insurance' %}" class="btn btn-common">Check Insurance</a>
+        </div>
+      </div>
     </div>
   </div>
 </section>

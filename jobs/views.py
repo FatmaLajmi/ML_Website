@@ -14,11 +14,18 @@ from .forms import JobForm
 @employer_required
 def add_job_view(request):
     """Employer can post a new job"""
+    # Check if employer profile exists
+    try:
+        employer_profile = request.user.employer_profile
+    except EmployerProfile.DoesNotExist:
+        messages.warning(request, 'Please complete your employer profile first before posting jobs.')
+        return redirect('accounts:profile')
+    
     if request.method == 'POST':
         form = JobForm(request.POST)
         if form.is_valid():
             job = form.save(commit=False)
-            job.company = request.user.employer_profile
+            job.company = employer_profile
             job.save()
             messages.success(request, 'Job posted successfully! It will be visible once approved by admin.')
             return redirect('jobs:my_jobs')
@@ -34,7 +41,14 @@ def add_job_view(request):
 @employer_required
 def my_jobs_view(request):
     """List all jobs posted by the logged-in employer"""
-    jobs = Job.objects.filter(company=request.user.employer_profile)
+    # Check if employer profile exists
+    try:
+        employer_profile = request.user.employer_profile
+    except EmployerProfile.DoesNotExist:
+        messages.warning(request, 'Please complete your employer profile first before posting jobs.')
+        return redirect('accounts:profile')
+    
+    jobs = Job.objects.filter(company=employer_profile)
     return render(request, 'jobs/my_jobs.html', {'jobs': jobs})
 
 

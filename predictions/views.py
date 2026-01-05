@@ -359,8 +359,11 @@ def employer_growth_view(request):
 
 from .forms import HealthInsuranceForm
 from ml_models.predictors.health_insurance_predictor import health_insurance_predictor
+from accounts.permissions import job_seeker_required
 
 
+@login_required
+@job_seeker_required
 def health_insurance_view(request):
     result = None
 
