@@ -86,3 +86,11 @@ __MACOSX/
 *.bak
 *.swp
 *~.nib
+
+
+# Machine Learning Models
+*. pkl
+ml_models/models/
+*.h5
+*.model
+*.joblib

@@ -13,7 +13,7 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('jobs/', include('jobs.urls')),
     path('predictions/', include('predictions.urls')),
-    # path('analytics/', include('analytics.urls')),  # Commented out - analytics views incomplete
+    # path('analytics/', include('analytics.urls')),
 ]
 
 # Serve media files in development

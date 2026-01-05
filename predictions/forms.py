@@ -159,6 +159,115 @@ class RevenueGrowthPredictionForm(forms.Form):
 
 
 class CampaignConversionPredictionForm(forms.Form):
+    """Form for marketing campaign conversion prediction"""
+    
+    COMPANY_CHOICES = [
+        ('', 'Select Company'),
+        ('Innovate Industries', 'Innovate Industries'),
+        ('NexGen Systems', 'NexGen Systems'),
+        ('Alpha Innovations', 'Alpha Innovations'),
+        ('DataTech Solutions', 'DataTech Solutions'),
+        ('TechCorp', 'TechCorp'),
+    ]
+    
+    LOCATION_CHOICES = [
+        ('', 'Select Location'),
+        ('Chicago', 'Chicago'),
+        ('Houston', 'Houston'),
+        ('Los Angeles', 'Los Angeles'),
+        ('Miami', 'Miami'),
+        ('New York', 'New York'),
+    ]
+    
+    CAMPAIGN_TYPE_CHOICES = [
+        ('', 'Select Campaign Type'),
+        ('Email', 'Email'),
+        ('Influencer', 'Influencer'),
+        ('Search', 'Search'),
+        ('Social Media', 'Social Media'),
+    ]
+    
+    TARGET_AUDIENCE_CHOICES = [
+        ('', 'Select Target Audience'),
+        ('All Ages', 'All Ages'),
+        ('Men 18-24', 'Men 18-24'),
+        ('Men 25-34', 'Men 25-34'),
+        ('Women 25-34', 'Women 25-34'),
+        ('Women 35-44', 'Women 35-44'),
+    ]
+    
+    CHANNEL_CHOICES = [
+        ('', 'Select Channel'),
+        ('Email', 'Email'),
+        ('Facebook', 'Facebook'),
+        ('Google Ads', 'Google Ads'),
+        ('Instagram', 'Instagram'),
+        ('Website', 'Website'),
+        ('YouTube', 'YouTube'),
+    ]
+    
+    LANGUAGE_CHOICES = [
+        ('', 'Select Language'),
+        ('English', 'English'),
+        ('French', 'French'),
+        ('Spanish', 'Spanish'),
+        ('Mandarin', 'Mandarin'),
+        ('German', 'German'),
+    ]
+    
+    CUSTOMER_SEGMENT_CHOICES = [
+        ('', 'Select Customer Segment'),
+        ('Fashionistas', 'Fashionistas'),
+        ('Health & Wellness', 'Health & Wellness'),
+        ('Outdoor Adventurers', 'Outdoor Adventurers'),
+        ('Foodies', 'Foodies'),
+        ('Tech Enthusiasts', 'Tech Enthusiasts'),
+    ]
+    
+    company = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter company name'})
+    )
+    
+    location = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter location'})
+    )
+    
+    campaign_type = forms.ChoiceField(
+        choices=CAMPAIGN_TYPE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    target_audience = forms.ChoiceField(
+        choices=TARGET_AUDIENCE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    duration = forms.IntegerField(
+        min_value=1,
+        max_value=365,
+        widget=forms.NumberInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Campaign duration in days'
+        }),
+        help_text='Duration in days (1-365)'
+    )
+    
+    channel_used = forms.ChoiceField(
+        choices=CHANNEL_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    language = forms.ChoiceField(
+        choices=LANGUAGE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
+    
+    customer_segment = forms.ChoiceField(
+        choices=CUSTOMER_SEGMENT_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'})
+    )
     """Form for campaign conversion prediction"""
     campaign_name = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Campaign Name'}))
     budget = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Campaign budget'}))
