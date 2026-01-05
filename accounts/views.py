@@ -77,7 +77,14 @@ def profile_view(request):
             return redirect('accounts:profile')
         
         if form.is_valid():
-            form.save()
+            profile_instance = form.save(commit=False)
+            profile_instance.user = user  # Ensure user is set
+            profile_instance.save()
+            
+            # For job seekers, save the many-to-many skills field
+            if user.role == 'job_seeker':
+                form.save_m2m()
+            
             # Update user info
             user.first_name = request.POST.get('first_name', user.first_name)
             user.last_name = request.POST.get('last_name', user.last_name)

@@ -14,6 +14,8 @@ class XGBoostGrowthPredictor:
         """Load the XGBoost model and feature list"""
         self.model = None
         self.features = None
+        self.industries = []
+        self.states = []
         self._load_model()
     
     def _load_model(self):
