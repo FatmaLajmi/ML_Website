@@ -68,10 +68,19 @@
                       <i class="lni-files"></i> Jobs Applied For
                     </a>
                   </li>
+                  <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="predictionDropdown"
+                      role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <li class="nav-item">
                     <a class="nav-link" href="{% url 'predictions:job_seeker_predictions' %}">
                       <i class="lni-brain"></i> Prediction Models
                     </a>
+
+                    <div class="dropdown-menu" aria-labelledby="predictionDropdown">
+                      <a class="dropdown-item" href="{% url 'predictions:health_insurance' %}">
+                        Health Insurance Predictor
+                      </a>
+                    </div>
                   </li>
                   
                 {% elif user.role == 'employer' %}

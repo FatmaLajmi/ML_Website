@@ -274,6 +274,61 @@ class CampaignConversionPredictionForm(forms.Form):
     target_audience_size = forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Target audience size'}))
     duration_days = forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Campaign duration (days)'}))
 
+SCHEDULE_CHOICES = [
+    ("full-time", "Full-time"),
+    ("part-time", "Part-time"),
+    ("contract", "Contract"),
+    ("internship", "Internship"),
+]
+
+YES_NO = [
+    ("Yes", "Yes"),
+    ("No", "No"),
+]
+
+COUNTRY_CHOICES = [
+    ("USA", "USA"),
+    ("UK", "UK"),
+    ("Canada", "Canada"),
+    ("France", "France"),
+    ("Germany", "Germany"),
+    ("Other", "Other"),
+]
+
+COMPANY_SIZE_CHOICES = [
+    ("Small", "Small"),
+    ("Medium", "Medium"),
+    ("Large", "Large"),
+]
+
+class HealthInsuranceForm(forms.Form):
+    job_title_short = forms.CharField(
+        label="Job title",
+        max_length=100,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g., Data Scientist"}),
+    )
+    job_schedule_type = forms.ChoiceField(
+        label="Schedule type",
+        choices=SCHEDULE_CHOICES,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    job_work_from_home = forms.ChoiceField(
+        label="Remote work?",
+        choices=YES_NO,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+    job_country = forms.ChoiceField(
+        label="Country",
+        choices=COUNTRY_CHOICES,
+        widget=forms.Select(attrs={"class": "form-control"}),
+    )
+
+    company_name = forms.CharField(
+        label="Company name",
+        max_length=100,
+        required=True,
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g., Google"}),
+    )
 
 class XGBoostGrowthPredictionForm(forms.Form):
     """Form for XGBoost company growth prediction"""

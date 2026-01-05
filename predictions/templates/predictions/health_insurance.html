@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h4 class="mb-0">Predict Health Insurance</h4>
+        </div>
+        <div class="card-body">
+          <form method="post" novalidate>
+            {% csrf_token %}
+            <div class="form-row">
+              <div class="form-group col-12">
+                <label for="{{ form.job_title_short.id_for_label }}">{{ form.job_title_short.label }}</label>
+                {{ form.job_title_short }}
+                {% if form.job_title_short.errors %}
+                  <div class="invalid-feedback d-block">{{ form.job_title_short.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group col-md-6">
+                <label for="{{ form.job_schedule_type.id_for_label }}">{{ form.job_schedule_type.label }}</label>
+                {{ form.job_schedule_type }}
+                {% if form.job_schedule_type.errors %}
+                  <div class="invalid-feedback d-block">{{ form.job_schedule_type.errors }}</div>
+                {% endif %}
+              </div>
+              <div class="form-group col-md-6">
+                <label for="{{ form.job_work_from_home.id_for_label }}">{{ form.job_work_from_home.label }}</label>
+                {{ form.job_work_from_home }}
+                {% if form.job_work_from_home.errors %}
+                  <div class="invalid-feedback d-block">{{ form.job_work_from_home.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group col-md-6">
+                <label for="{{ form.job_country.id_for_label }}">{{ form.job_country.label }}</label>
+                {{ form.job_country }}
+                {% if form.job_country.errors %}
+                  <div class="invalid-feedback d-block">{{ form.job_country.errors }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group col-md-6">
+                <label for="{{ form.company_name.id_for_label }}">{{ form.company_name.label }}</label>
+                {{ form.company_name }}
+                {% if form.company_name.help_text %}
+                  <small class="form-text text-muted">{{ form.company_name.help_text }}</small>
+                {% endif %}
+                {% if form.company_name.errors %}
+                  <div class="invalid-feedback d-block">{{ form.company_name.errors }}</div>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+              <button type="submit" class="btn btn-primary">Predict</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="card-footer">
+          {% if result %}
+            {% if result.error %}
+              <div class="alert alert-danger mb-0">{{ result.error }}</div>
+            {% else %}
+              <div class="row align-items-center">
+                <div class="col-md-6">
+                  <h5 class="mb-1">Prediction:
+                    {% if result.has_health_insurance == 1 %}
+                      <span class="badge badge-success">{{ result.has_health_insurance_label }}</span>
+                    {% else %}
+                      <span class="badge badge-secondary">{{ result.has_health_insurance_label }}</span>
+                    {% endif %}
+                  </h5>
+                  {% if result.probability_yes is not None %}
+                    <small class="text-muted">Raw probability: {{ result.probability_yes }}</small>
+                  {% endif %}
+                </div>
+                <div class="col-md-6">
+                  {% if result.probability_yes is not None %}
+                    <div class="progress" style="height:18px;">
+                      <div class="progress-bar" role="progressbar" id="health-prog" data-value="{{ result.probability_yes|floatformat:6 }}" aria-valuenow="{{ result.probability_yes }}" aria-valuemin="0" aria-valuemax="1"></div>
+                    </div>
+                    <script>
+                      (function(){
+                        var el = document.getElementById('health-prog');
+                        if (!el) return;
+                        var v = parseFloat(el.getAttribute('data-value')) || 0;
+                        var pct = (v * 100).toFixed(2) + '%';
+                        el.style.width = pct;
+                        el.textContent = (v * 100).toFixed(2) + '%';
+                      })();
+                    </script>
+                  {% endif %}
+                </div>
+              </div>
+            {% endif %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
