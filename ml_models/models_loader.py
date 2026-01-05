@@ -48,7 +48,7 @@ class ModelsLoader:
             "health_insurance": health_filename,
             'salary': 'salary_model.pkl',
             'job_title': 'job_title_model.pkl',
-            'remote_work': 'remote_work_model.pkl',
+            'remote_work': 'remote_work_v3(eya).pkl',
             'degree': 'degree_model.pkl',
             'benefits': 'benefits_model.pkl',
             'company_growth': 'company_growth_model.pkl',

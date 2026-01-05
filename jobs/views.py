@@ -7,7 +7,6 @@ from accounts.models import EmployerProfile, JobSeekerProfile
 from .models import Job, JobApplication
 from .forms import JobForm
 
-
 # ===== EMPLOYER VIEWS =====
 
 @login_required

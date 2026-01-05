@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import CampaignConversionPredictionForm
+from .forms import CampaignConversionPredictionForm, RemoteWorkPredictionForm
 from .models import CampaignPrediction
 from ml_models.predictors.campaign_conversion_predictor import campaign_conversion_predictor
+from ml_models.predictors.remote_work_predictor import predict_remote_work
 
 
 @login_required
@@ -400,3 +401,36 @@ def health_insurance_view(request):
         form = HealthInsuranceForm()
 
     return render(request, "predictions/health_insurance.html", {"form": form, "result": result})
+def remote_work_page(request):
+    result = None
+    error = None
+    form_data = {}
+
+    if request.method == "POST":
+        form_data = {
+            "job_title_short": request.POST.get("job_title_short", ""),
+            "job_country": request.POST.get("job_country", ""),
+            "job_schedule_type": request.POST.get("job_schedule_type", ""),
+            "job_seniority": request.POST.get("job_seniority", ""),
+            "text_block": request.POST.get("text_block", ""),
+        }
+
+        form = RemoteWorkPredictionForm(request.POST)
+        if form.is_valid():
+            out = predict_remote_work(form.cleaned_data)
+            if out.get("success"):
+                result = out
+                messages.success(request, f"Prediction: {out['prediction']} ({out['proba_remote_pct']}%)")
+            else:
+                error = out.get("error", "Prediction failed")
+                messages.error(request, error)
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = RemoteWorkPredictionForm()
+
+    return render(request, "predictions/remote_work.html", {
+        "result": result,
+        "error": error,
+        "form_data": form_data,
+    })
