@@ -143,14 +143,14 @@ class CampaignConversionPredictionForm(forms.Form):
         ('Tech Enthusiasts', 'Tech Enthusiasts'),
     ]
     
-    company = forms.ChoiceField(
-        choices=COMPANY_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    company = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter company name'})
     )
     
-    location = forms.ChoiceField(
-        choices=LOCATION_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'})
+    location = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Enter location'})
     )
     
     campaign_type = forms.ChoiceField(
