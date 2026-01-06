@@ -462,3 +462,66 @@ class RemoteWorkPredictionForm(forms.Form):
         widget=forms.Textarea(attrs={"class": "form-control", "rows": 6, "placeholder": "Paste job description / skills / tools ..."}),
         label="Job Description"
     )
+
+class SalaryPredictionForm(forms.Form):
+    """Form for salary prediction using regression model"""
+    
+    COUNTRY_CHOICES = [
+        ('', '-- Select Country --'),
+        ('US', 'United States'),
+        ('CA', 'Canada'),
+        ('UK', 'United Kingdom'),
+        ('AU', 'Australia'),
+        ('DE', 'Germany'),
+        ('FR', 'France'),
+        ('IN', 'India'),
+        ('SG', 'Singapore'),
+        ('NL', 'Netherlands'),
+    ]
+    
+    STATE_CHOICES = [
+        ('', '-- Select State --'),
+        ('CA', 'California'),
+        ('NY', 'New York'),
+        ('TX', 'Texas'),
+        ('FL', 'Florida'),
+        ('WA', 'Washington'),
+        ('MA', 'Massachusetts'),
+        ('IL', 'Illinois'),
+        ('PA', 'Pennsylvania'),
+        ('CO', 'Colorado'),
+        ('Unknown', 'Other/Unknown'),
+    ]
+    
+    job_title_short = forms.CharField(
+        max_length=200,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'e.g., data scientist, backend engineer, product manager'
+        }),
+        label='Job Title',
+        help_text='Enter the job title (short form)'
+    )
+    
+    job_country = forms.ChoiceField(
+        choices=COUNTRY_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='Country'
+    )
+    
+    job_state = forms.ChoiceField(
+        choices=STATE_CHOICES,
+        widget=forms.Select(attrs={'class': 'form-control'}),
+        label='State/Region',
+        required=False
+    )
+    
+    skills_text = forms.CharField(
+        widget=forms.Textarea(attrs={
+            'class': 'form-control',
+            'rows': 4,
+            'placeholder': 'e.g., python, sql, machine learning, aws, docker'
+        }),
+        label='Skills (comma-separated)',
+        help_text='List main skills required for the job'
+    )

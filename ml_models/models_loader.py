@@ -47,6 +47,7 @@ class ModelsLoader:
         model_files = {
             "health_insurance": health_filename,
             'salary': 'salary_model.pkl',
+            'salary_regression': 'salary_regression_model(zeineb+eya).pkl',
             'job_title': 'job_title_model.pkl',
             'remote_work': 'remote_work_v3(eya).pkl',
             'degree': 'degree_model.pkl',

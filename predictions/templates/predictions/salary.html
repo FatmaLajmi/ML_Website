@@ -1,0 +1,331 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Salary Prediction - AI-Powered Salary Estimator{% endblock %}
+
+{% block extra_css %}
+<style>
+    .salary-predictor {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 60px 0;
+        margin-bottom: 40px;
+    }
+    
+    .salary-result {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        color: white;
+        padding: 40px;
+        border-radius: 10px;
+        text-align: center;
+        margin-top: 30px;
+    }
+    
+    .salary-amount {
+        font-size: 48px;
+        font-weight: bold;
+        margin: 20px 0;
+    }
+    
+    .salary-details {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 8px;
+        margin-top: 20px;
+    }
+    
+    .salary-detail-item {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+        font-size: 16px;
+    }
+    
+    .form-section {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-group label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+    
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 10px 15px;
+    }
+    
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    }
+    
+    .btn-predict {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 30px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s;
+        width: 100%;
+    }
+    
+    .btn-predict:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .help-text {
+        font-size: 12px;
+        color: #777;
+        margin-top: 5px;
+    }
+    
+    .alert-error {
+        background-color: #f8d7da;
+        border-color: #f5c6cb;
+        color: #721c24;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        border-color: #c3e6cb;
+        color: #155724;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Header Section -->
+<section class="salary-predictor">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 style="font-size: 40px; margin-bottom: 20px;">
+                    <i class="lni-money-location"></i> Salary Prediction Engine
+                </h1>
+                <p style="font-size: 18px; opacity: 0.95;">
+                    Estimate your potential salary based on job title, location, skills, and experience.
+                    Our AI-powered regression model analyzes market data to provide accurate predictions.
+                </p>
+            </div>
+            <div class="col-lg-4">
+                <div style="background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 8px;">
+                    <p style="margin: 0; font-size: 14px;">💡 Tip: Be specific about your skills and job title for better accuracy</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Main Content -->
+<section class="section" style="padding: 40px 0;">
+    <div class="container">
+        <div class="row">
+            <!-- Form Column -->
+            <div class="col-lg-6 mb-30">
+                <div class="form-section">
+                    <h3 style="color: #333; margin-bottom: 30px;">
+                        <i class="lni-briefcase"></i> Job Information
+                    </h3>
+                    
+                    <!-- Error Messages -->
+                    {% if error %}
+                    <div class="alert alert-error alert-dismissible fade show" role="alert">
+                        <i class="lni-close"></i> <strong>Error:</strong> {{ error }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Form -->
+                    <form method="POST" class="salary-form">
+                        {% csrf_token %}
+                        
+                        <!-- Job Title -->
+                        <div class="form-group">
+                            <label for="{{ form.job_title_short.id_for_label }}">
+                                {{ form.job_title_short.label }}
+                            </label>
+                            {{ form.job_title_short }}
+                            {% if form.job_title_short.help_text %}
+                            <small class="help-text">{{ form.job_title_short.help_text|safe }}</small>
+                            {% endif %}
+                            {% if form.job_title_short.errors %}
+                            <div class="text-danger mt-2">{{ form.job_title_short.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Country -->
+                        <div class="form-group">
+                            <label for="{{ form.job_country.id_for_label }}">
+                                {{ form.job_country.label }}
+                            </label>
+                            {{ form.job_country }}
+                            {% if form.job_country.errors %}
+                            <div class="text-danger mt-2">{{ form.job_country.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- State/Region -->
+                        <div class="form-group">
+                            <label for="{{ form.job_state.id_for_label }}">
+                                {{ form.job_state.label }}
+                            </label>
+                            {{ form.job_state }}
+                            <small class="help-text">Optional - mainly for US-based positions</small>
+                            {% if form.job_state.errors %}
+                            <div class="text-danger mt-2">{{ form.job_state.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Skills -->
+                        <div class="form-group">
+                            <label for="{{ form.skills_text.id_for_label }}">
+                                {{ form.skills_text.label }}
+                            </label>
+                            {{ form.skills_text }}
+                            {% if form.skills_text.help_text %}
+                            <small class="help-text">{{ form.skills_text.help_text|safe }}</small>
+                            {% endif %}
+                            {% if form.skills_text.errors %}
+                            <div class="text-danger mt-2">{{ form.skills_text.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn-predict">
+                            <i class="lni-magnifier"></i> Predict Salary
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Results Column -->
+            <div class="col-lg-6 mb-30">
+                {% if result %}
+                    {% if result.success %}
+                    <div class="salary-result">
+                        <h3 style="margin-top: 0;">
+                            <i class="lni-check-mark"></i> Prediction Result
+                        </h3>
+                        
+                        <div style="border-bottom: 2px solid rgba(255, 255, 255, 0.3); padding-bottom: 20px;">
+                            <p style="font-size: 14px; margin: 0; opacity: 0.9;">Estimated Annual Salary</p>
+                            <div class="salary-amount">{{ result.prediction }}</div>
+                            <p style="font-size: 12px; margin: 0; opacity: 0.8;">{{ result.currency }}</p>
+                        </div>
+                        
+                        <div class="salary-details">
+                            <div class="salary-detail-item">
+                                <span>Job Title:</span>
+                                <strong>{{ result.job_title|title }}</strong>
+                            </div>
+                            <div class="salary-detail-item">
+                                <span>Number of Skills:</span>
+                                <strong>{{ result.num_skills }}</strong>
+                            </div>
+                            <div class="salary-detail-item">
+                                <span>Model Confidence:</span>
+                                <strong>Regression Analysis</strong>
+                            </div>
+                        </div>
+                        
+                        <p style="font-size: 12px; margin-top: 20px; opacity: 0.8;">
+                            ⓘ This is an AI-generated estimate based on market analysis and may vary based on 
+                            additional factors like experience level, education, and company size.
+                        </p>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-error" style="padding: 20px; border-radius: 8px;">
+                        <h5>⚠️ Prediction Error</h5>
+                        <p>{{ result.error }}</p>
+                    </div>
+                    {% endif %}
+                {% else %}
+                    <div class="form-section" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); text-align: center;">
+                        <div style="padding: 60px 20px;">
+                            <i class="lni-empty-wallet" style="font-size: 60px; color: #667eea; display: block; margin-bottom: 20px;"></i>
+                            <h4 style="color: #333;">Enter your job details above</h4>
+                            <p style="color: #666; margin: 0;">
+                                Fill in the form to get an AI-powered salary prediction based on current market data.
+                            </p>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Information Section -->
+<section class="section" style="background: #f9f9f9; padding: 40px 0;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h3 style="text-align: center; margin-bottom: 40px; color: #333;">
+                    <i class="lni-lightbulb"></i> How the Prediction Works
+                </h3>
+                
+                <div class="row">
+                    <div class="col-md-4 mb-30">
+                        <div style="background: white; padding: 30px; border-radius: 8px; text-align: center;">
+                            <h5 style="color: #667eea; margin-bottom: 15px;">
+                                <i class="lni-layers"></i> Feature Analysis
+                            </h5>
+                            <p style="color: #666;">
+                                Our model analyzes job title, location, skills, and experience to understand the position.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-30">
+                        <div style="background: white; padding: 30px; border-radius: 8px; text-align: center;">
+                            <h5 style="color: #667eea; margin-bottom: 15px;">
+                                <i class="lni-bar-chart"></i> Market Data
+                            </h5>
+                            <p style="color: #666;">
+                                Predictions are based on comprehensive market salary data from thousands of job postings.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-4 mb-30">
+                        <div style="background: white; padding: 30px; border-radius: 8px; text-align: center;">
+                            <h5 style="color: #667eea; margin-bottom: 15px;">
+                                <i class="lni-target"></i> Accurate Results
+                            </h5>
+                            <p style="color: #666;">
+                                Machine learning regression ensures highly accurate salary predictions for your role.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-dismiss success messages after 5 seconds
+    setTimeout(function() {
+        var alert = document.querySelector('.alert-success');
+        if (alert) {
+            alert.style.display = 'none';
+        }
+    }, 5000);
+</script>
+{% endblock %}

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import CampaignConversionPredictionForm, RemoteWorkPredictionForm
+from .forms import CampaignConversionPredictionForm, RemoteWorkPredictionForm, SalaryPredictionForm
 from .models import CampaignPrediction
 from ml_models.predictors.campaign_conversion_predictor import campaign_conversion_predictor
 from ml_models.predictors.remote_work_predictor import predict_remote_work
+from ml_models.predictors.salary_predictor_regression import predict_salary
 
 
 @login_required
@@ -434,3 +435,45 @@ def remote_work_page(request):
         "error": error,
         "form_data": form_data,
     })
+
+
+@login_required
+def salary_prediction_page(request):
+    """Salary regression prediction page - accessible to job seekers and employers"""
+    result = None
+    error = None
+    
+    if request.method == "POST":
+        form = SalaryPredictionForm(request.POST)
+        if form.is_valid():
+            # Prepare input data
+            input_data = {
+                'job_title_short': form.cleaned_data['job_title_short'],
+                'job_country': form.cleaned_data['job_country'],
+                'job_state': form.cleaned_data.get('job_state', 'Unknown'),
+                'skills_text': form.cleaned_data['skills_text'],
+                'company_size': 'Medium',  # Default value
+            }
+            
+            # Make prediction
+            out = predict_salary(input_data)
+            if out.get('success'):
+                result = out
+                messages.success(
+                    request,
+                    f"Predicted Salary for {out['job_title'].title()}: {out['prediction']}"
+                )
+            else:
+                error = out.get('error', 'Prediction failed')
+                messages.error(request, error)
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = SalaryPredictionForm()
+    
+    return render(request, "predictions/salary.html", {
+        "form": form,
+        "result": result,
+        "error": error,
+    })
+
