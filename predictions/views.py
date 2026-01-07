@@ -1,9 +1,17 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from .forms import CampaignConversionPredictionForm
+from .forms import (
+    CampaignConversionPredictionForm, SalaryPredictionForm, JobTitlePredictionForm, 
+    RemoteWorkPredictionForm, DegreePredictionForm, BenefitsPredictionForm, 
+    CompanyGrowthPredictionForm, RevenueGrowthPredictionForm, XGBoostGrowthPredictionForm
+)
 from .models import CampaignPrediction
 from ml_models.predictors.campaign_conversion_predictor import campaign_conversion_predictor
+import pickle
+from pathlib import Path
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder
 
 
 @login_required
@@ -69,26 +77,9 @@ def campaign_conversion_view(request):
 
 
 @login_required
-def job_seeker_predictions_view(request):
-    """Placeholder view for job seeker predictions"""
-    return render(request, 'predictions/jobSeekersPredictions.html')
-
-
-@login_required
 def employer_predictions_view(request):
     """Placeholder view for employer predictions"""
     return render(request, 'predictions/employersPredictions.html')
-from django.shortcuts import render
-from django.contrib import messages
-from .forms import (
-    SalaryPredictionForm, JobTitlePredictionForm, RemoteWorkPredictionForm,
-    DegreePredictionForm, BenefitsPredictionForm, CompanyGrowthPredictionForm,
-    RevenueGrowthPredictionForm, CampaignConversionPredictionForm, XGBoostGrowthPredictionForm
-)
-import pickle
-from pathlib import Path
-import pandas as pd
-from sklearn.preprocessing import LabelEncoder
 
 
 def degree_mention_view(request):
@@ -128,8 +119,14 @@ def degree_mention_view(request):
     return render(request, 'predictions/degree_mention.html', context)
 
 
+@login_required
 def job_seeker_predictions_view(request):
     """View for job seeker predictions including degree requirement prediction"""
+    
+    print("=" * 80)
+    print(f"VIEW CALLED: Method={request.method}, User={request.user.username}, Authenticated={request.user.is_authenticated}")
+    print("=" * 80)
+    
     context = {
         'salary_form': SalaryPredictionForm(),
         'job_title_form': JobTitlePredictionForm(),
@@ -141,8 +138,67 @@ def job_seeker_predictions_view(request):
     # Handle degree prediction form submission
     if request.method == 'POST':
         prediction_type = request.POST.get('prediction_type')
+        print(f"DEBUG: POST request received, prediction_type={prediction_type}")
+        print(f"DEBUG: POST data keys: {list(request.POST.keys())}")
+        print(f"DEBUG: User authenticated: {request.user.is_authenticated}")
         
-        if prediction_type == 'degree':
+        if prediction_type == 'job_title':
+            # Handle job title prediction based on user's skills
+            from ml_models.predictors.job_title_predictor import job_title_predictor
+            
+            print(f"DEBUG: Job title prediction requested")
+            
+            # Get user's skills from profile
+            if hasattr(request.user, 'jobseeker_profile'):
+                profile = request.user.jobseeker_profile
+                skills = profile.skills.all()
+                
+                print(f"DEBUG: Found jobseeker profile with {skills.count()} skills")
+                
+                if skills.count() == 0:
+                    # No skills in profile - redirect to profile page
+                    messages.warning(
+                        request, 
+                        'Please add skills to your profile first to get job title recommendations.'
+                    )
+                    context['show_job_title_modal'] = True
+                    context['no_skills'] = True
+                else:
+                    # Get skill names as list
+                    skills_list = [skill.name for skill in skills]
+                    
+                    # Get years of experience for seniority detection
+                    years_experience = profile.years_experience
+                    
+                    print(f"DEBUG: Skills list: {skills_list}")
+                    print(f"DEBUG: Years of experience: {years_experience}")
+                    
+                    # Make prediction with years of experience
+                    result = job_title_predictor.predict(skills_list, years_of_experience=years_experience)
+                    
+                    print(f"DEBUG: Prediction result: {result}")
+                    
+                    if result.get('success'):
+                        context['job_title_result'] = result
+                        messages.success(
+                            request, 
+                            f"Recommended Job Title: {result['recommended_title']}"
+                        )
+                    else:
+                        messages.error(request, result.get('error', 'Prediction failed'))
+                    
+                    context['show_job_title_modal'] = True
+            else:
+                # No job seeker profile exists
+                print(f"DEBUG: No jobseeker profile found for user")
+                messages.warning(
+                    request, 
+                    'Please complete your profile first to get job title recommendations.'
+                )
+                context['show_job_title_modal'] = True
+                context['no_profile'] = True
+        
+        elif prediction_type == 'degree':
             degree_form = DegreePredictionForm(request.POST)
             
             if degree_form.is_valid():

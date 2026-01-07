@@ -16,17 +16,36 @@
     background-color: white;
   }
   .skill-card:hover {
-    border-color: #ff6b6b;
-    background-color: #fff5f5;
+    border-color: #4c6ef5;
+    background-color: #f0f4ff;
     transform: scale(1.05);
   }
   .skill-card.selected {
-    background-color: #ff6b6b;
+    background-color: #4c6ef5;
     color: white;
-    border-color: #ff6b6b;
+    border-color: #4c6ef5;
+  }
+  .skill-card.selected:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transform: scale(1.08);
   }
   .skill-card input[type="checkbox"] {
     display: none;
+  }
+  .skill-search-box {
+    width: 100%;
+    padding: 12px 20px;
+    margin-bottom: 15px;
+    border: 2px solid #ddd;
+    border-radius: 25px;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  .skill-search-box:focus {
+    outline: none;
+    border-color: #4c6ef5;
+    box-shadow: 0 0 0 3px rgba(76, 110, 245, 0.1);
   }
   .skill-checkbox-wrapper {
     display: flex;
@@ -39,18 +58,31 @@
     border: 1px solid #eee;
     border-radius: 5px;
   }
+  .skill-card.hidden {
+    display: none;
+  }
+  .no-results-message {
+    display: none;
+    color: #999;
+    text-align: center;
+    padding: 20px;
+    font-style: italic;
+  }
+  .no-results-message.show {
+    display: block;
+  }
   .selected-skills-wrapper {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 15px;
     padding: 10px;
-    background-color: #f8f9fa;
+    background-color: #f0f4ff;
     border-radius: 5px;
     min-height: 50px;
   }
   .selected-skills-wrapper:empty::before {
-    content: 'No skills selected yet';
+    content: 'No skills selected yet. Click "Add/Remove Skills" to add some.';
     color: #999;
     font-style: italic;
   }
@@ -61,30 +93,43 @@
     display: block;
   }
   .toggle-skills-btn {
-    background-color: #6c757d;
+    background-color: #4c6ef5;
     color: white;
     border: none;
-    padding: 8px 20px;
-    border-radius: 4px;
+    padding: 10px 24px;
+    border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s;
     margin-bottom: 10px;
+    font-weight: 500;
   }
   .toggle-skills-btn:hover {
-    background-color: #5a6268;
+    background-color: #3b5bdb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 110, 245, 0.3);
+  }
+  .skill-count-badge {
+    display: inline-block;
+    background-color: #4c6ef5;
+    color: white;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    margin-left: 8px;
+    font-weight: 600;
   }
   .custom-file-upload {
     display: inline-block;
     padding: 10px 20px;
     cursor: pointer;
-    background-color: #ff6b6b;
+    background-color: #4c6ef5;
     color: white;
     border-radius: 4px;
     transition: all 0.3s;
     margin-bottom: 10px;
   }
   .custom-file-upload:hover {
-    background-color: #ff5252;
+    background-color: #3b5bdb;
   }
   .custom-file-upload i {
     margin-right: 8px;
@@ -220,7 +265,7 @@
               </div>
               
               <div class="form-group">
-                <label><i class="lni-tag"></i> Your Skills</label>
+                <label><i class="lni-tag"></i> Your Skills <span class="skill-count-badge" id="skill-count">0 selected</span></label>
                 <div class="selected-skills-wrapper" id="selected-skills">
                   <!-- Selected skills will appear here -->
                 </div>
@@ -230,9 +275,10 @@
                 </button>
                 
                 <div class="all-skills-container" id="all-skills-container">
-                  <div class="skill-checkbox-wrapper">
+                  <input type="text" class="skill-search-box" id="skill-search" placeholder="🔍 Search skills... (e.g., Python, AWS, SQL)">
+                  <div class="skill-checkbox-wrapper" id="skills-container">
                     {% for skill in form.skills %}
-                      <div class="skill-card" data-skill-id="{{ skill.id_for_label }}">
+                      <div class="skill-card" data-skill-id="{{ skill.id_for_label }}" data-skill-name="{{ skill.choice_label|lower }}">
                         {{ skill.tag }}
                         <label for="{{ skill.id_for_label }}" style="margin: 0; cursor: pointer; padding: 0; user-select: none;">
                           {{ skill.choice_label }}
@@ -240,6 +286,7 @@
                       </div>
                     {% endfor %}
                   </div>
+                  <div class="no-results-message" id="no-results">No skills found matching your search.</div>
                 </div>
                 {% if form.skills.errors %}
                 <div class="invalid-feedback d-block">{{ form.skills.errors }}</div>
@@ -391,6 +438,10 @@
     const toggleBtn = document.getElementById('toggle-skills-btn');
     const allSkillsContainer = document.getElementById('all-skills-container');
     const selectedSkillsWrapper = document.getElementById('selected-skills');
+    const skillSearch = document.getElementById('skill-search');
+    const skillsContainer = document.getElementById('skills-container');
+    const noResultsMsg = document.getElementById('no-results');
+    const skillCountBadge = document.getElementById('skill-count');
     
     // Toggle skills container
     if (toggleBtn) {
@@ -400,11 +451,45 @@
         if (allSkillsContainer.classList.contains('show')) {
           icon.className = 'lni-minus';
           this.innerHTML = '<i class="lni-minus"></i> Hide Skills';
+          // Focus search box when opening
+          setTimeout(() => skillSearch.focus(), 100);
         } else {
           icon.className = 'lni-plus';
           this.innerHTML = '<i class="lni-plus"></i> Add/Remove Skills';
+          // Clear search when closing
+          skillSearch.value = '';
+          filterSkills('');
         }
       });
+    }
+    
+    // Search functionality
+    if (skillSearch) {
+      skillSearch.addEventListener('input', function() {
+        filterSkills(this.value.toLowerCase());
+      });
+    }
+    
+    function filterSkills(searchTerm) {
+      let visibleCount = 0;
+      
+      document.querySelectorAll('.skill-card').forEach(card => {
+        const skillName = card.getAttribute('data-skill-name');
+        
+        if (searchTerm === '' || skillName.includes(searchTerm)) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+      
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        noResultsMsg.classList.add('show');
+      } else {
+        noResultsMsg.classList.remove('show');
+      }
     }
     
     // Skill card interaction
@@ -435,6 +520,7 @@
     function updateSkillDisplay() {
       // Clear selected skills display
       selectedSkillsWrapper.innerHTML = '';
+      let selectedCount = 0;
       
       // Update all skill cards and populate selected skills
       document.querySelectorAll('.skill-card').forEach(card => {
@@ -442,9 +528,11 @@
         
         if (checkbox.checked) {
           card.classList.add('selected');
+          selectedCount++;
           
           // Clone the card for the selected skills area
           const selectedCard = card.cloneNode(true);
+          selectedCard.setAttribute('title', 'Click to remove this skill');
           selectedCard.addEventListener('click', function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -457,6 +545,13 @@
           card.classList.remove('selected');
         }
       });
+      
+      // Update skill count badge
+      if (skillCountBadge) {
+        skillCountBadge.textContent = selectedCount === 0 ? '0 selected' : 
+                                       selectedCount === 1 ? '1 selected' : 
+                                       `${selectedCount} selected`;
+      }
     }
     
     // Initialize skill display
