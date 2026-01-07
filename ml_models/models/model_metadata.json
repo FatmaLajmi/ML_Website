@@ -1,0 +1,20 @@
+{
+  "version": "1.0",
+  "f1_score": 0.6601214239911989,
+  "accuracy": 0.6611574074074074,
+  "n_classes": 9,
+  "classes": [
+    "Analyst (BA/DA)",
+    "Cloud Engineer",
+    "Data Engineer",
+    "Data Scientist",
+    "Machine Learning Engineer",
+    "Senior Data Analyst",
+    "Senior Data Engineer",
+    "Senior Data Scientist",
+    "Software Engineer"
+  ],
+  "training_date": "2026-01-06 23:42:46",
+  "training_samples": 86400,
+  "test_samples": 21600
+}
