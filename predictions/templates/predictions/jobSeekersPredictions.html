@@ -43,7 +43,7 @@
           </div>
           <h4>Salary Prediction</h4>
           <p>Estimate your expected salary based on your skills, experience, and job title.</p>
-          <button class="btn btn-common" data-toggle="modal" data-target="#salaryModal">Predict Salary</button>
+          <a href="{% url 'predictions:salary' %}" class="btn btn-common">Predict Salary</a>
         </div>
       </div>
       
@@ -67,7 +67,7 @@
           </div>
           <h4>Remote Work Eligibility</h4>
           <p>Check if your profile is suitable for remote work opportunities.</p>
-          <button class="btn btn-common" data-toggle="modal" data-target="#remoteWorkModal">Check Eligibility</button>
+          <a href="{% url 'predictions:remote_work' %}" class="btn btn-common">Check Eligibility</a>
         </div>
       </div>
       
@@ -100,28 +100,6 @@
 <!-- Content section End -->
 
 <!-- Modals for Each Prediction -->
-<!-- Salary Prediction Modal -->
-<div class="modal fade" id="salaryModal" tabindex="-1" role="dialog">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Salary Prediction</h5>
-        <button type="button" class="close" data-dismiss="modal">
-          <span>&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form method="post" action="{% url 'predictions:job_seeker_predictions' %}">
-          {% csrf_token %}
-          <input type="hidden" name="prediction_type" value="salary">
-          {{ salary_form.as_p }}
-          <button type="submit" class="btn btn-common">Predict</button>
-        </form>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- Job Title Prediction Modal -->
 <div class="modal fade" id="jobTitleModal" tabindex="-1" role="dialog">
   <div class="modal-dialog modal-lg" role="document">

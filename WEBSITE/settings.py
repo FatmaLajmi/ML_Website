@@ -142,5 +142,5 @@ AUTH_USER_MODEL = 'accounts.User'
 
 # Login/logout redirects
 LOGIN_URL = 'accounts:login'
-LOGIN_REDIRECT_URL = 'accounts:page'
+LOGIN_REDIRECT_URL = 'accounts:dashboard_redirect'
 LOGOUT_REDIRECT_URL = 'home'

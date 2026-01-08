@@ -48,12 +48,14 @@
                 </a>
               </li>
               
-              <!-- Analytics - Always visible -->
+              <!-- Analytics - Only for employers -->
+              {% if user.is_authenticated and user.role == 'employer' %}
               <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{% url 'analytics:powerbi_dashboard' %}">
                   <i class="lni-bar-chart"></i> Analytics
                 </a>
               </li>
+              {% endif %}
               
               {% if user.is_authenticated %}
                 {% if user.role == 'job_seeker' %}
@@ -68,22 +70,10 @@
                       <i class="lni-files"></i> Jobs Applied For
                     </a>
                   </li>
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="predictionDropdown"
-                      role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'predictions:job_seeker_predictions' %}">
                       <i class="lni-brain"></i> Prediction Models
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="predictionDropdown">
-                      <a class="dropdown-item" href="{% url 'predictions:health_insurance' %}">
-                        Health Insurance Predictor
-                      </a>
-                      <a class="dropdown-item" href="{% url 'predictions:remote_work' %}">
-                        Remote Work Predictor
-                      </a>
-                      <a class="dropdown-item" href="{% url 'predictions:salary' %}">
-                        Salary Prediction
-                      </a>
-                    </div>
                   </li>
                   
                 {% elif user.role == 'employer' %}
@@ -98,22 +88,10 @@
                       <i class="lni-plus"></i> Post a New Job
                     </a>
                   </li>
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="employerPredictionDropdown"
-                      role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'predictions:employer_predictions' %}">
                       <i class="lni-brain"></i> Prediction Models
                     </a>
-                    <div class="dropdown-menu" aria-labelledby="employerPredictionDropdown">
-                      <a class="dropdown-item" href="{% url 'predictions:campaign_conversion' %}">
-                        <i class="lni-bullhorn"></i> Campaign Conversion
-                      </a>
-                      <a class="dropdown-item" href="{% url 'predictions:salary' %}">
-                        <i class="lni-money-location"></i> Salary Prediction
-                      </a>
-                      <a class="dropdown-item" href="{% url 'predictions:employer_predictions' %}">
-                        <i class="lni-bar-chart"></i> Other Predictions
-                      </a>
-                    </div>
                   </li>
                 {% endif %}
                 
@@ -124,7 +102,6 @@
                   </a>
                   <ul class="dropdown-menu">
                     <li><a class="dropdown-item" href="{% url 'accounts:profile' %}"><i class="lni-user"></i> My Profile</a></li>
-                    <li><a class="dropdown-item" href="{% url 'accounts:dashboard_redirect' %}"><i class="lni-dashboard"></i> Dashboard</a></li>
                     <li class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{% url 'accounts:logout' %}"><i class="lni-exit"></i> Logout</a></li>
                   </ul>

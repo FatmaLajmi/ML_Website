@@ -120,13 +120,9 @@ def dashboard_redirect_view(request):
         return redirect('admin:index')  # Admin dashboard
     
     if user.role == 'employer':
-        # Temporarily redirect to profile until jobs app is implemented
-        messages.info(request, f'Welcome back, {user.get_full_name()}! Your employer dashboard is coming soon.')
-        return redirect('accounts:profile')  # Employer dashboard
+        return redirect('home')  # Redirect to home
     elif user.role == 'job_seeker':
-        # Temporarily redirect to profile until jobs app is implemented
-        messages.info(request, f'Welcome back, {user.get_full_name()}! Job listings are coming soon.')
-        return redirect('accounts:profile')  # Job seeker dashboard
+        return redirect('home')  # Redirect to home
     elif user.role == 'admin':
         return redirect('admin:index')  # Admin dashboard
     else:
