@@ -1,0 +1,78 @@
+{
+  "features": [
+    "is_senior",
+    "prog_skills",
+    "cloud_skills",
+    "ml_skills",
+    "viz_skills",
+    "discriminative_skills_count",
+    "big_data_count",
+    "devops_count",
+    "deep_learning_count"
+  ],
+  "big_data_skills": [
+    "spark",
+    "hadoop",
+    "kafka",
+    "airflow",
+    "databricks",
+    "snowflake",
+    "redshift",
+    "hive",
+    "flink"
+  ],
+  "devops_skills": [
+    "docker",
+    "kubernetes",
+    "terraform",
+    "ansible",
+    "jenkins"
+  ],
+  "deep_learning_skills": [
+    "tensorflow",
+    "pytorch",
+    "keras",
+    "neural"
+  ],
+  "programming_skills": [
+    "java",
+    "c++",
+    "scala",
+    "go",
+    "bash",
+    "c#",
+    "php",
+    "javascript"
+  ],
+  "cloud_skills": [
+    "aws",
+    "azure",
+    "gcp",
+    "bigquery",
+    "databricks",
+    "redshift"
+  ],
+  "ml_tools": [
+    "tensorflow",
+    "pytorch",
+    "keras",
+    "scikit-learn",
+    "pandas",
+    "numpy",
+    "matplotlib"
+  ],
+  "viz_tools": [
+    "tableau",
+    "power bi",
+    "looker",
+    "qlik"
+  ],
+  "universal_skills": [
+    "sql",
+    "excel",
+    "windows",
+    "python",
+    "linux",
+    "git"
+  ]
+}

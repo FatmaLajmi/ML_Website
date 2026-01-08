@@ -10,7 +10,7 @@
     <div class="row">         
       <div class="col-lg-12">
         <div class="inner-header">
-          <h3>ML Predictions for Job Seekers</h3>
+          <h3>Career Predictions & Job Insights</h3>
           <p>Get AI-powered insights to enhance your job search</p>
         </div>
       </div>
@@ -39,7 +39,7 @@
       <div class="col-lg-6 col-md-6 col-xs-12 mb-4">
         <div class="box h-100">
           <div class="icon">
-            <i class="lni-dollar"></i>
+            <i class="lni-wallet"></i>
           </div>
           <h4>Salary Prediction</h4>
           <p>Estimate your expected salary based on your skills, experience, and job title.</p>
@@ -117,6 +117,172 @@
           {{ salary_form.as_p }}
           <button type="submit" class="btn btn-common">Predict</button>
         </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Job Title Prediction Modal -->
+<div class="modal fade" id="jobTitleModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-white" style="background-color: #4c40ed;">
+        <h5 class="modal-title">
+          <i class="lni-briefcase"></i> Job Title Recommendation
+        </h5>
+        <button type="button" class="close text-white" data-dismiss="modal">
+          <span>&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <!-- Show prediction result if available -->
+        {% if job_title_result %}
+        <div class="card border-0 shadow-sm">
+          <div class="card-header text-white" style="background-color: #00BCD4;">
+            <h4 class="mb-0">
+              <i class="lni-graduation"></i> Your Career Match Result
+            </h4>
+          </div>
+          <div class="card-body">
+            {% if job_title_result.success %}
+            
+              <!-- Main Recommendation -->
+              <div class="text-center py-4 mb-4 bg-light rounded">
+                <h2 class="text-primary mb-3">{{ job_title_result.recommended_title }}</h2>
+                <p class="lead text-success mb-2">
+                  <i class="lni-check-mark-circle"></i> {{ job_title_result.confidence }} Match
+                </p>
+                {% if job_title_result.years_of_experience is not None %}
+                <p class="text-muted mb-0">
+                  <i class="lni-timer"></i> {{ job_title_result.years_of_experience }} years experience 
+                  <span class="badge badge-{% if job_title_result.experience_level == 'Senior' %}success{% else %}info{% endif %}">
+                    {{ job_title_result.experience_level }}
+                  </span>
+                </p>
+                {% endif %}
+              </div>
+              
+              <!-- Alternative Careers -->
+              {% if job_title_result.top_predictions %}
+              <div class="mb-4">
+                <h5 class="border-bottom pb-2 mb-3">
+                  <i class="lni-layers"></i> Alternative Career Paths
+                </h5>
+                <p class="text-muted small mb-3">Based on your current skill set, you may also qualify for:</p>
+                {% for pred in job_title_result.top_predictions %}
+                  {% if forloop.counter > 1 %}
+                  <div class="d-flex justify-content-between align-items-center p-3 mb-2 bg-light rounded">
+                    <span><i class="lni-arrow-right text-primary"></i> <strong>{{ pred.title }}</strong></span>
+                    <span class="badge badge-info">{{ pred.probability }} Match</span>
+                  </div>
+                  {% endif %}
+                {% endfor %}
+              </div>
+              {% endif %}
+              
+              <!-- Personalized Advice -->
+              {% if job_title_result.advice %}
+              <div class="alert alert-info mb-4">
+                <h5><i class="lni-bullhorn"></i> Career Advice</h5>
+                <p class="mb-0">{{ job_title_result.advice }}</p>
+              </div>
+              {% endif %}
+              
+              <!-- Skills to Learn -->
+              {% if job_title_result.recommended_skills %}
+              <div class="mb-4">
+                <h5 class="border-bottom pb-2 mb-3">
+                  <i class="lni-book"></i> Recommended Skills to Learn
+                </h5>
+                <p class="text-muted small mb-3">
+                  Strengthen your profile for <strong>{{ job_title_result.recommended_title }}</strong> by learning:
+                </p>
+                <div class="row">
+                  {% for skill in job_title_result.recommended_skills %}
+                  <div class="col-md-6 mb-2">
+                    <div class="p-2 border rounded">
+                      <i class="lni-star-filled text-warning"></i> {{ skill }}
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+              </div>
+              {% endif %}
+              
+              <!-- Your Current Skills -->
+              <div class="mb-3">
+                <h5 class="border-bottom pb-2 mb-3">
+                  <i class="lni-checkmark"></i> Your Current Skills
+                </h5>
+                <div class="d-flex flex-wrap">
+                  {% for skill in job_title_result.skills_used %}
+                  <span class="badge badge-secondary m-1 p-2">{{ skill }}</span>
+                  {% endfor %}
+                </div>
+                
+                {% if job_title_result.discriminative_skills_used %}
+                <div class="mt-3 p-3 bg-success-light rounded">
+                  <strong class="text-success"><i class="lni-thumbs-up"></i> Strong Match:</strong>
+                  <span class="text-muted">{{ job_title_result.discriminative_skills_used|join:", " }}</span>
+                  <br>
+                  <small class="text-muted">These skills are highly valued for this role.</small>
+                </div>
+                {% endif %}
+              </div>
+              
+            {% else %}
+              <div class="alert alert-danger">
+                <i class="lni-cross-circle"></i> {{ job_title_result.error }}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- No Skills / No Profile Warning -->
+        {% if no_skills or no_profile %}
+        <div class="alert alert-warning">
+          <h5><i class="lni-warning"></i> Skills Required</h5>
+          <p>
+            To get personalized job title recommendations, you need to add skills to your profile.
+          </p>
+          <a href="{% url 'accounts:profile' %}" class="btn btn-warning mt-2">
+            <i class="lni-user"></i> Go to Profile & Add Skills
+          </a>
+        </div>
+        {% else %}
+        <!-- Form to trigger prediction -->
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+              <i class="lni-rocket"></i> Get Recommendation
+            </h4>
+          </div>
+          <div class="card-body">
+            <p class="mb-3">
+              Click the button below to get a job title recommendation based on the skills in your profile.
+            </p>
+            <form method="post" action="{% url 'predictions:job_seeker_predictions' %}">
+              {% csrf_token %}
+              <input type="hidden" name="prediction_type" value="job_title">
+              <div class="text-center">
+                <button type="submit" class="btn btn-common btn-lg">
+                  <i class="lni-rocket"></i> Recommend Job Title
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        
+        <!-- Info Box -->
+        <div class="alert alert-info mt-4">
+          <h5><i class="lni-information"></i> How it works</h5>
+          <p class="mb-0">
+            Our machine learning model analyzes the skills in your profile and recommends
+            the most suitable job title based on industry patterns and skill combinations.
+          </p>
+        </div>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -383,6 +549,13 @@
   {% if degree_result %}
   $(document).ready(function() {
     $('#degreeModal').modal('show');
+  });
+  {% endif %}
+  
+  // Auto-open job title modal if needed
+  {% if show_job_title_modal %}
+  $(document).ready(function() {
+    $('#jobTitleModal').modal('show');
   });
   {% endif %}
 </script>
