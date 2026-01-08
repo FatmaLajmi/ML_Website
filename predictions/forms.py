@@ -26,56 +26,6 @@ class JobTitlePredictionForm(forms.Form):
     experience_years = forms.IntegerField(min_value=0, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Years of experience'}))
 
 
-class RemoteWorkPredictionForm(forms.Form):
-    """Form for remote work eligibility prediction"""
-    
-    INDUSTRY_CHOICES = [
-        ('', '-- Select Industry --'),
-        ('Advertising & Marketing', 'Advertising & Marketing'),
-        ('Business Products & Services', 'Business Products & Services'),
-        ('Computer Hardware', 'Computer Hardware'),
-        ('Construction', 'Construction'),
-        ('Consumer Products & Services', 'Consumer Products & Services'),
-        ('Education', 'Education'),
-        ('Energy', 'Energy'),
-        ('Engineering', 'Engineering'),
-        ('Environmental Services', 'Environmental Services'),
-        ('Financial Services', 'Financial Services'),
-        ('Food & Beverage', 'Food & Beverage'),
-        ('Government Services', 'Government Services'),
-        ('Health', 'Health'),
-        ('Human Resources', 'Human Resources'),
-        ('Insurance', 'Insurance'),
-        ('IT Management', 'IT Management'),
-        ('IT Services', 'IT Services'),
-        ('IT System Development', 'IT System Development'),
-        ('Logistics & Transportation', 'Logistics & Transportation'),
-        ('Manufacturing', 'Manufacturing'),
-        ('Media', 'Media'),
-        ('Real Estate', 'Real Estate'),
-        ('Retail', 'Retail'),
-        ('Security', 'Security'),
-        ('Software', 'Software'),
-        ('Telecommunications', 'Telecommunications'),
-        ('Travel & Hospitality', 'Travel & Hospitality'),
-    ]
-    
-    job_title = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Job Title'}))
-    industry = forms.ChoiceField(
-        choices=INDUSTRY_CHOICES,
-        widget=forms.Select(attrs={'class': 'form-control'}),
-        help_text='Select the industry that matches your training data'
-    )
-    company_size = forms.ChoiceField(
-        choices=[
-            ('small', 'Small (1-50)'),
-            ('medium', 'Medium (51-500)'),
-            ('large', 'Large (500+)'),
-        ],
-        widget=forms.Select(attrs={'class': 'form-control'})
-    )
-
-
 class DegreePredictionForm(forms.Form):
     """Form for degree requirement prediction using XGBoost model"""
     skill_count = forms.IntegerField(
@@ -268,11 +218,7 @@ class CampaignConversionPredictionForm(forms.Form):
         choices=CUSTOMER_SEGMENT_CHOICES,
         widget=forms.Select(attrs={'class': 'form-control'})
     )
-    """Form for campaign conversion prediction"""
-    campaign_name = forms.CharField(max_length=200, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Campaign Name'}))
-    budget = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Campaign budget'}))
-    target_audience_size = forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Target audience size'}))
-    duration_days = forms.IntegerField(min_value=1, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Campaign duration (days)'}))
+
 
 SCHEDULE_CHOICES = [
     ("full-time", "Full-time"),

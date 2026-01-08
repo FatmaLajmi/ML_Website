@@ -288,7 +288,7 @@ def predict_salary(data: dict) -> dict:
         # ===== COMPLETE FEATURE ENGINEERING (170+ columns) =====
         X, features_dict = prepare_complete_features(data)
         
-        print(f"✅ Generated {len(features_dict)} features for model")
+        print(f"[OK] Generated {len(features_dict)} features for model")
         print(f"   Skill columns: {sum(1 for k in features_dict if k.startswith('skill_'))}")
         print(f"   DataFrame shape: {X.shape}")
         

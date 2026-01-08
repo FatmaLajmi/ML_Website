@@ -12,15 +12,38 @@ class Job(models.Model):
         ('temporary', 'Temporary'),
     ]
     
+    EXPERIENCE_LEVEL_CHOICES = [
+        ('entry', 'Entry Level'),
+        ('mid', 'Mid Level'),
+        ('senior', 'Senior Level'),
+        ('executive', 'Executive'),
+    ]
+    
+    EDUCATION_LEVEL_CHOICES = [
+        ('high_school', 'High School'),
+        ('associate', 'Associate Degree'),
+        ('bachelor', 'Bachelor\'s Degree'),
+        ('master', 'Master\'s Degree'),
+        ('phd', 'PhD'),
+        ('none', 'No Specific Requirement'),
+    ]
+    
     title = models.CharField(max_length=255)
     description = models.TextField()
+    requirements = models.TextField(blank=True, null=True, help_text='Job requirements and qualifications')
     company = models.ForeignKey(EmployerProfile, on_delete=models.CASCADE, related_name='jobs')
+    company_description = models.TextField(blank=True, null=True, help_text='Brief company description')
+    company_website = models.URLField(blank=True, null=True, help_text='Company website URL')
     location = models.CharField(max_length=255)
     salary_range = models.CharField(max_length=100, blank=True, null=True)
     job_type = models.CharField(max_length=20, choices=JOB_TYPE_CHOICES)
+    experience_level = models.CharField(max_length=20, choices=EXPERIENCE_LEVEL_CHOICES, blank=True, null=True)
+    education_level = models.CharField(max_length=20, choices=EDUCATION_LEVEL_CHOICES, blank=True, null=True)
+    skills_required = models.TextField(blank=True, null=True, help_text='Required skills (comma-separated)')
     degree_required = models.BooleanField(default=False, null=True, blank=True)
     remote_option = models.BooleanField(default=False, null=True, blank=True)
     benefits = models.TextField(blank=True, null=True)
+    deadline = models.DateField(blank=True, null=True, help_text='Application deadline')
     posted_at = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
     

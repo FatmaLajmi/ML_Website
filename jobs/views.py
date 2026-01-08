@@ -53,36 +53,48 @@ def my_jobs_view(request):
 
 # ===== JOB SEEKER VIEWS =====
 
-@login_required
-@job_seeker_required
 def job_list_view(request):
-    """List all approved jobs for job seekers"""
+    """List all approved jobs for everyone (no login required)"""
     jobs = Job.objects.filter(approved=True)
     
-    # Optional: Add search functionality
-    search_query = request.GET.get('q', '')
+    # Search by keywords (title, description, company)
+    search_query = request.GET.get('search', '')
     if search_query:
         jobs = jobs.filter(
             Q(title__icontains=search_query) |
             Q(description__icontains=search_query) |
-            Q(location__icontains=search_query) |
             Q(company__company_name__icontains=search_query)
         )
+    
+    # Filter by location
+    location = request.GET.get('location', '')
+    if location:
+        jobs = jobs.filter(location__icontains=location)
+    
+    # Filter by job type
+    job_type = request.GET.get('job_type', '')
+    if job_type:
+        jobs = jobs.filter(job_type=job_type)
+    
+    # Filter by experience level (if you have this field in the model)
+    experience_level = request.GET.get('experience_level', '')
+    if experience_level:
+        jobs = jobs.filter(description__icontains=experience_level)
     
     return render(request, 'jobs/job_list.html', {'jobs': jobs, 'search_query': search_query})
 
 
-@login_required
-@job_seeker_required
 def job_detail_view(request, job_id):
-    """Detail page for a specific job"""
+    """Detail page for a specific job (no login required)"""
     job = get_object_or_404(Job, id=job_id, approved=True)
     
-    # Check if user has already applied
-    has_applied = JobApplication.objects.filter(
-        job=job,
-        applicant=request.user.jobseeker_profile
-    ).exists()
+    # Check if user has already applied (only for logged-in job seekers)
+    has_applied = False
+    if request.user.is_authenticated and hasattr(request.user, 'jobseeker_profile'):
+        has_applied = JobApplication.objects.filter(
+            job=job,
+            applicant=request.user.jobseeker_profile
+        ).exists()
     
     return render(request, 'jobs/job_detail.html', {
         'job': job,
@@ -92,17 +104,27 @@ def job_detail_view(request, job_id):
 
 @login_required
 @job_seeker_required
+@login_required
+@job_seeker_required
 def apply_job_view(request, job_id):
     """Apply for a job"""
     job = get_object_or_404(Job, id=job_id, approved=True)
-    applicant = request.user.jobseeker_profile
+    
+    # Get or create job seeker profile if it doesn't exist
+    try:
+        applicant = request.user.jobseeker_profile
+    except:
+        messages.error(request, 'You need a job seeker profile to apply for jobs.')
+        return redirect('accounts:profile')
     
     # Check if already applied
-    if JobApplication.objects.filter(job=job, applicant=applicant).exists():
+    has_applied = JobApplication.objects.filter(job=job, applicant=applicant).exists()
+    if has_applied:
         messages.warning(request, 'You have already applied for this job.')
         return redirect('jobs:job_detail', job_id=job.id)
     
     if request.method == 'POST':
+        # Create the application
         JobApplication.objects.create(
             job=job,
             applicant=applicant,
@@ -111,7 +133,12 @@ def apply_job_view(request, job_id):
         messages.success(request, f'Successfully applied for {job.title}!')
         return redirect('jobs:jobs_applied')
     
-    return redirect('jobs:job_detail', job_id=job.id)
+    # GET request - show confirmation page
+    context = {
+        'job': job,
+        'has_applied': has_applied
+    }
+    return render(request, 'jobs/apply_job.html', context)
 
 
 @login_required

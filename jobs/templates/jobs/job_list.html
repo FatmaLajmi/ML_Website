@@ -43,10 +43,11 @@
                 <label>Job Type</label>
                 <select class="form-control" name="job_type">
                   <option value="">All Types</option>
-                  <option value="Full-time" {% if request.GET.job_type == "Full-time" %}selected{% endif %}>Full-time</option>
-                  <option value="Part-time" {% if request.GET.job_type == "Part-time" %}selected{% endif %}>Part-time</option>
-                  <option value="Contract" {% if request.GET.job_type == "Contract" %}selected{% endif %}>Contract</option>
-                  <option value="Freelance" {% if request.GET.job_type == "Freelance" %}selected{% endif %}>Freelance</option>
+                  <option value="full_time" {% if request.GET.job_type == "full_time" %}selected{% endif %}>Full-time</option>
+                  <option value="part_time" {% if request.GET.job_type == "part_time" %}selected{% endif %}>Part-time</option>
+                  <option value="contract" {% if request.GET.job_type == "contract" %}selected{% endif %}>Contract</option>
+                  <option value="internship" {% if request.GET.job_type == "internship" %}selected{% endif %}>Internship</option>
+                  <option value="temporary" {% if request.GET.job_type == "temporary" %}selected{% endif %}>Temporary</option>
                 </select>
               </div>
               
@@ -76,39 +77,44 @@
           
           {% if jobs %}
             {% for job in jobs %}
-            <div class="job-box d-md-flex align-items-center justify-content-between mb-30">
+            <div class="job-box d-md-flex align-items-center justify-content-between mb-30" style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); transition: all 0.3s;" onmouseover="this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)'" onmouseout="this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)'">
               <div class="job-left my-4 d-md-flex align-items-center flex-wrap">
-                <div class="img-holder mr-md-4 mb-md-0 mb-4 mx-auto mx-md-0 d-md-none d-lg-flex">
-                  {% if job.company_logo %}
-                  <img src="{{ job.company_logo.url }}" alt="{{ job.company_name }}">
-                  {% else %}
-                  <img src="{% static 'img/about/company-logo.png' %}" alt="{{ job.company_name }}">
-                  {% endif %}
-                </div>
-                <div class="job-content">
-                  <h5 class="text-center text-md-left">
-                    <a href="{% url 'jobs:job_detail' job.id %}">{{ job.title }}</a>
-                  </h5>
-                  <ul class="d-md-flex flex-wrap text-capitalize ff-open-sans">
-                    <li class="mr-md-4">
-                      <i class="lni-briefcase mr-2"></i> {{ job.company_name }}
-                    </li>
-                    <li class="mr-md-4">
-                      <i class="lni-map-marker mr-2"></i> {{ job.location }}
-                    </li>
-                    <li class="mr-md-4">
-                      <i class="lni-alarm-clock mr-2"></i> {{ job.job_type }}
-                    </li>
-                    {% if job.min_salary and job.max_salary %}
-                    <li>
-                      <i class="lni-dollar mr-2"></i> ${{ job.min_salary|floatformat:0 }} - ${{ job.max_salary|floatformat:0 }}
-                    </li>
+                <div class="job-content" style="flex: 1;">
+                  <h5 class="text-center text-md-left" style="margin-bottom: 10px; font-weight: 600;">
+                    <a href="{% url 'jobs:job_detail' job.id %}" style="color: #333; text-decoration: none;">{{ job.title }}</a>
+                    {% if job.approved %}
+                    <span class="badge badge-success ml-2" style="font-size: 11px;">Active</span>
                     {% endif %}
+                  </h5>
+                  <ul class="d-md-flex flex-wrap text-capitalize ff-open-sans" style="list-style: none; padding: 0; margin: 10px 0; font-size: 14px; color: #666;">
+                    <li class="mr-md-4" style="margin-bottom: 5px;">
+                      <i class="lni-briefcase mr-2" style="color: #4c6ef5;"></i> {{ job.company_name }}
+                    </li>
+                    <li class="mr-md-4" style="margin-bottom: 5px;">
+                      <i class="lni-map-marker mr-2" style="color: #4c6ef5;"></i> {{ job.location }}
+                    </li>
+                    <li class="mr-md-4" style="margin-bottom: 5px;">
+                      <i class="lni-alarm-clock mr-2" style="color: #4c6ef5;"></i> {{ job.job_type }}
+                    </li>
+                    <li style="margin-bottom: 5px;">
+                      <i class="lni-dollar mr-2" style="color: #4c6ef5;"></i> 
+                      {% if job.salary_range %}
+                      {{ job.salary_range }}
+                      {% else %}
+                      Not Disclosed
+                      {% endif %}
+                    </li>
                   </ul>
+                  <div style="font-size: 12px; color: #999; margin-top: 8px;">
+                    <i class="lni-calendar"></i> Posted {{ job.created_at|timesince }} ago
+                  </div>
                 </div>
               </div>
-              <div class="job-right my-4 flex-shrink-0">
-                <a href="{% url 'jobs:job_detail' job.id %}" class="btn d-block w-100 d-sm-inline-block btn-light">View Details</a>
+              <div class="job-right my-4 flex-shrink-0" style="display: flex; flex-direction: column; gap: 8px; min-width: 140px;">
+                <a href="{% url 'jobs:job_detail' job.id %}" class="btn d-block w-100 d-sm-inline-block" style="background: #4c6ef5; color: white; border: none; padding: 10px 20px; border-radius: 4px; text-align: center; text-decoration: none; font-weight: 500; transition: all 0.3s;" onmouseover="this.style.background='#3b5bdb'" onmouseout="this.style.background='#4c6ef5'">View Details</a>
+                {% if user.is_authenticated and user.role == 'job_seeker' and job.approved %}
+                  <a href="{% url 'jobs:apply_job' job.id %}" class="btn d-block w-100 d-sm-inline-block" style="background: #51cf66; color: white; border: none; padding: 10px 20px; border-radius: 4px; text-align: center; text-decoration: none; font-weight: 500; transition: all 0.3s;" onmouseover="this.style.background='#40c057'" onmouseout="this.style.background='#51cf66'"><i class="lni-check-mark-circle"></i> Apply Now</a>
+                {% endif %}
               </div>
             </div>
             {% endfor %}

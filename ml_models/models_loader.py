@@ -46,16 +46,17 @@ class ModelsLoader:
         
         model_files = {
             "health_insurance": health_filename,
-            'salary': 'salary_model.pkl',
             'salary_regression': 'salary_regression_model(zeineb+eya).pkl',
-            'job_title': 'job_title_model.pkl',
             'remote_work': 'remote_work_v3(eya).pkl',
-            'degree': 'degree_model.pkl',
-            'benefits': 'benefits_model.pkl',
-            'company_growth': 'company_growth_model.pkl',
-            'revenue_growth': 'revenue_growth_model.pkl',
             'campaign_conversion': 'best_random_forest_model.pkl',
-            'campaign_scaler': 'campaign_scaler.pkl',
+            'job_classifier': 'job_classifier_model.pkl',
+            'growth_lgbm': 'growth_lgbm_pipeline(jojo).pkl',
+            'xgboost_growth': 'xgboost_growth_model.pkl',
+            'xgboost_growth_fatma': 'xgboost_growth_model(fatma).pkl',
+            'xgb_classifier': 'xgb_classifier_model(jojo).pkl',
+            'model_features': 'model_features.pkl',
+            'model_features_jojo': 'model_features(jojo).pkl',
+            'xgb_features_jojo': 'xgb_features(jojo).pkl',
         }
         
         for model_name, filename in model_files.items():

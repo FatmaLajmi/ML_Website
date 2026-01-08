@@ -11,7 +11,6 @@
       <div class="col-lg-12">
         <div class="inner-header">
           <h3>Apply for Job</h3>
-          <p>{{ job.title }} at {{ job.company_name }}</p>
         </div>
       </div>
     </div>
@@ -24,122 +23,67 @@
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-8 col-md-10 col-xs-12">
-        <div class="page-login-form box">
-          <h3>Job Application</h3>
+        <div class="page-login-form box" style="background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
           
           <!-- Job Summary -->
-          <div class="alert alert-info mb-4">
-            <h5><i class="lni-briefcase"></i> {{ job.title }}</h5>
-            <p class="mb-1"><strong>Company:</strong> {{ job.company_name }}</p>
-            <p class="mb-1"><strong>Location:</strong> {{ job.location }}</p>
-            <p class="mb-0"><strong>Type:</strong> {{ job.job_type }}</p>
+          <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px; margin-bottom: 30px; color: white; text-align: center;">
+            <i class="lni-briefcase" style="font-size: 64px; display: block; margin-bottom: 15px;"></i>
+            <h3 style="color: white; margin-bottom: 10px; font-weight: 600;">{{ job.title }}</h3>
+            <p style="margin: 5px 0; opacity: 0.95;"><i class="lni-home"></i> {{ job.company.company_name }}</p>
+            <p style="margin: 5px 0; opacity: 0.95;"><i class="lni-map-marker"></i> {{ job.location }}</p>
+            <p style="margin: 5px 0; opacity: 0.95;"><i class="lni-alarm-clock"></i> {{ job.job_type }}</p>
           </div>
-          
-          <form method="post" enctype="multipart/form-data">
+
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h4 style="color: #333; margin-bottom: 15px; font-weight: 600;">Confirm Your Application</h4>
+            <p style="color: #666; font-size: 16px; line-height: 1.6;">
+              You are about to apply for this position. Click the button below to submit your application.
+            </p>
+          </div>
+
+          <!-- Profile Info -->
+          <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+            <h5 style="color: #333; margin-bottom: 15px; font-weight: 600;"><i class="lni-user"></i> Your Application Details</h5>
+            <div style="color: #555; line-height: 1.8;">
+              <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+              <p><strong>Email:</strong> {{ user.email }}</p>
+              {% if user.jobseeker_profile.phone %}
+              <p><strong>Phone:</strong> {{ user.jobseeker_profile.phone }}</p>
+              {% endif %}
+              {% if user.jobseeker_profile.education_level %}
+              <p><strong>Education:</strong> {{ user.jobseeker_profile.get_education_level_display }}</p>
+              {% endif %}
+              {% if user.jobseeker_profile.years_experience %}
+              <p><strong>Experience:</strong> {{ user.jobseeker_profile.years_experience }} years</p>
+              {% endif %}
+              {% if user.jobseeker_profile.resume %}
+              <p><strong>Resume:</strong> <a href="{{ user.jobseeker_profile.resume.url }}" target="_blank" style="color: #4c6ef5;">View Resume</a></p>
+              {% endif %}
+            </div>
+          </div>
+
+          <form method="post" action="{% url 'jobs:apply_job' job.id %}">
             {% csrf_token %}
             
-            {% if form.non_field_errors %}
-            <div class="alert alert-danger">
-              {{ form.non_field_errors }}
+            <div class="alert alert-info" style="background: #e7f5ff; border: 1px solid #4c6ef5; color: #1864ab; border-radius: 6px;">
+              <i class="lni-information"></i> <strong>Note:</strong> Your profile information will be shared with the employer. Make sure your profile is complete and up-to-date.
             </div>
-            {% endif %}
-            
-            <div class="form-group">
-              <label for="{{ form.cover_letter.id_for_label }}">Cover Letter *</label>
-              {{ form.cover_letter }}
-              {% if form.cover_letter.errors %}
-              <div class="invalid-feedback d-block">{{ form.cover_letter.errors }}</div>
-              {% endif %}
-              <small class="form-text text-muted">
-                Tell us why you're a great fit for this position. Highlight your relevant skills and experience.
-              </small>
+
+            <div style="text-align: center; margin-top: 30px;">
+              <button type="submit" class="btn btn-lg" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); color: white; padding: 15px 50px; border: none; border-radius: 50px; font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(81, 207, 102, 0.3);" onmouseover="this.style.transform='translateY(-2px) scale(1.05)'; this.style.boxShadow='0 6px 20px rgba(81, 207, 102, 0.4)'" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='0 4px 15px rgba(81, 207, 102, 0.3)'">
+                <i class="lni-check-mark-circle"></i> Confirm & Submit Application
+              </button>
+              <br>
+              <a href="{% url 'jobs:job_detail' job.id %}" style="display: inline-block; margin-top: 15px; color: #666; text-decoration: none; font-size: 14px;">
+                <i class="lni-arrow-left"></i> Back to Job Details
+              </a>
             </div>
-            
-            <div class="form-group">
-              <label for="{{ form.resume.id_for_label }}">Resume (Optional)</label>
-              {{ form.resume }}
-              {% if form.resume.errors %}
-              <div class="invalid-feedback d-block">{{ form.resume.errors }}</div>
-              {% endif %}
-              <small class="form-text text-muted">
-                {% if user.jobseekerprofile.resume %}
-                Your profile resume will be used if you don't upload a new one. 
-                <a href="{{ user.jobseekerprofile.resume.url }}" target="_blank">View current resume</a>
-                {% else %}
-                Upload your resume in PDF format (max 5MB).
-                {% endif %}
-              </small>
-            </div>
-            
-            <div class="form-group">
-              <label for="{{ form.expected_salary.id_for_label }}">Expected Salary</label>
-              <div class="input-icon">
-                <i class="lni-dollar"></i>
-                {{ form.expected_salary }}
-              </div>
-              {% if form.expected_salary.errors %}
-              <div class="invalid-feedback d-block">{{ form.expected_salary.errors }}</div>
-              {% endif %}
-              <small class="form-text text-muted">Optional: Your expected annual salary.</small>
-            </div>
-            
-            <div class="form-group">
-              <label for="{{ form.availability.id_for_label }}">When can you start?</label>
-              {{ form.availability }}
-              {% if form.availability.errors %}
-              <div class="invalid-feedback d-block">{{ form.availability.errors }}</div>
-              {% endif %}
-            </div>
-            
-            <div class="form-check mb-4">
-              <input type="checkbox" class="form-check-input" id="terms" required>
-              <label class="form-check-label" for="terms">
-                I confirm that the information provided is accurate and I agree to the <a href="#">Terms of Service</a>.
-              </label>
-            </div>
-            
-            <button type="submit" class="btn btn-common log-btn">Submit Application</button>
-            <a href="{% url 'jobs:job_detail' job.id %}" class="btn btn-secondary log-btn ml-2">Cancel</a>
           </form>
-          
-          <div class="alert alert-warning mt-4">
-            <i class="lni-warning"></i> <strong>Note:</strong> Please ensure all information is accurate. 
-            Your application will be reviewed by the employer.
-          </div>
+
         </div>
       </div>
     </div>
   </div>
 </section>
 <!-- Content section End -->
-{% endblock %}
-
-{% block extra_css %}
-<style>
-  .form-control, select, textarea {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  textarea {
-    min-height: 200px;
-  }
-  
-  .input-icon {
-    position: relative;
-  }
-  
-  .input-icon i {
-    position: absolute;
-    left: 10px;
-    top: 12px;
-    color: #999;
-  }
-  
-  .input-icon input {
-    padding-left: 35px;
-  }
-</style>
 {% endblock %}

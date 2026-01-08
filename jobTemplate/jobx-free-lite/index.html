@@ -10,60 +10,22 @@
       <div class="container">      
         <div class="row space-100 justify-content-center">
           <div class="col-lg-10 col-md-12 col-xs-12">
-            <div class="contents">
+            <div class="contents text-center">
               <h2 class="head-title">AI-Powered Job Matching Platform</h2>
               <p>Leverage machine learning to find your perfect job or candidate. Get intelligent predictions for salaries, <br> remote work eligibility, career recommendations, and business growth insights.</p>
-              <div class="job-search-form">
-                <form>
-                  <div class="row">
-                    <div class="col-lg-5 col-md-6 col-xs-12">
-                      <div class="form-group">
-                        <input class="form-control" type="text" placeholder="Job Title or Company Name">
-                      </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-xs-12">
-                      <div class="form-group">
-                        <div class="search-category-container">
-                          <label class="styled-select">
-                            <select>
-                              <option value="none">Locations</option>
-                              <option value="none">New York</option>
-                              <option value="none">California</option>
-                              <option value="none">Washington</option>
-                              <option value="none">Birmingham</option>
-                              <option value="none">Chicago</option>
-                              <option value="none">Phoenix</option>
-                            </select>
-                          </label>
-                        </div>
-                        <i class="lni-map-marker"></i>
-                      </div>
-                    </div>
-                    <div class="col-lg-3 col-md-6 col-xs-12">
-                      <div class="form-group">
-                        <div class="search-category-container">
-                          <label class="styled-select">
-                            <select>
-                              <option>All Categories</option>
-                              <option>Finance</option>
-                              <option>IT & Engineering</option>
-                              <option>Education/Training</option>
-                              <option>Art/Design</option>
-                              <option>Sale/Markting</option>
-                              <option>Healthcare</option>
-                              <option>Science</option>                              
-                              <option>Food Services</option>
-                            </select>
-                          </label>
-                        </div>
-                        <i class="lni-layers"></i>
-                      </div>
-                    </div>
-                    <div class="col-lg-1 col-md-6 col-xs-12">
-                      <button type="submit" class="button"><i class="lni-search"></i></button>
-                    </div>
-                  </div>
-                </form>
+              <div class="mt-4">
+                {% if user.is_authenticated %}
+                  {% if user.role == 'job_seeker' %}
+                    <a href="{% url 'jobs:job_list' %}" class="btn btn-common btn-lg mr-3">Browse Jobs</a>
+                    <a href="{% url 'predictions:job_seeker_predictions' %}" class="btn btn-border btn-lg">Try ML Predictions</a>
+                  {% elif user.role == 'employer' %}
+                    <a href="{% url 'jobs:add_job' %}" class="btn btn-common btn-lg mr-3">Post a Job</a>
+                    <a href="{% url 'predictions:employer_predictions' %}" class="btn btn-border btn-lg">Try ML Predictions</a>
+                  {% endif %}
+                {% else %}
+                  <a href="{% url 'jobs:job_list' %}" class="btn btn-common btn-lg mr-3">Browse Jobs</a>
+                  <a href="{% url 'accounts:signup' %}" class="btn btn-border btn-lg">Get Started</a>
+                {% endif %}
               </div>
             </div>
           </div>
@@ -72,98 +34,92 @@
     </header>
     <!-- Header Section End --> 
 
-    <!-- Category Section Start -->
-    <section class="category section bg-gray">
-      <div class="container">
-        <div class="section-header">  
-          <h2 class="section-title">Browse Categories</h2>
-          <p>Most popular categories of portal, sorted by popularity</p>
-        </div>
-        <div class="row">   
-          <div class="col-lg-3 col-md-6 col-xs-12 f-category">
-            <a href="browse-jobs.html">
-              <div class="icon bg-color-1">
-                <i class="lni-home"></i>
-              </div>
-              <h3>Finance</h3>
-              <p>(4286 jobs)</p>
-            </a>
-          </div>
-          <div class="col-lg-3 col-md-6 col-xs-12 f-category">
-            <a href="browse-jobs.html">
-              <div class="icon bg-color-2">
-               <i class="lni-world"></i>
-              </div>
-              <h3>Sale/Markting</h3>
-              <p>(2000 jobs)</p>
-            </a>
-          </div>
-          <div class="col-lg-3 col-md-6 col-xs-12 f-category">
-            <a href="browse-jobs.html">
-              <div class="icon bg-color-3">
-               <i class="lni-book"></i>
-              </div>
-              <h3>Education/Training</h3>
-              <p>(1450 jobs)</p>
-            </a>
-          </div>
-          <div class="col-lg-3 col-md-6 col-xs-12 f-category border-right-0">
-            <a href="browse-jobs.html">
-              <div class="icon bg-color-4">
-               <i class="lni-display"></i>
-              </div>
-              <h3>Technologies</h3>
-              <p>(5100 jobs)</p>
-            </a>
-          </div>
-          <div class="col-lg-3 col-md-6 col-xs-12 f-category border-bottom-0">
-            <a href="browse-jobs.html">
-              <div class="icon bg-color-5">
-                <i class="lni-brush"></i>
-              </div>
-              <h3>Art/Design</h3>
-              <p>(5079 jobs)</p>
-            </a>
-          </div>            
-          <div class="col-lg-3 col-md-6 col-xs-12 f-category border-bottom-0">
-            <a href="browse-jobs.html">
-              <div class="icon bg-color-6">
-              <i class="lni-heart"></i>
-              </div>
-              <h3>Healthcare</h3>
-              <p>(3235 jobs)</p>
-            </a>
-          </div>
-          <div class="col-lg-3 col-md-6 col-xs-12 f-category border-bottom-0">
-            <a href="browse-jobs.html">
-              <div class="icon bg-color-7">
-               <i class="lni-funnel"></i>
-              </div> 
-              <h3>Science</h3>
-              <p>(1800 jobs)</p> 
-            </a>
-          </div>            
-          <div class="col-lg-3 col-md-6 col-xs-12 f-category border-right-0 border-bottom-0">
-            <a href="browse-jobs.html">
-              <div class="icon bg-color-8">
-               <i class="lni-cup"></i>
-              </div>
-              <h3>Food Services</h3>
-              <p>(4286 jobs)</p>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Category Section End -->  
+  
 
     <!-- ML Features Section Start -->
     <section id="ml-features" class="section">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">AI-Powered Features</h2>
+          {% if user.is_authenticated %}
+            {% if user.role == 'job_seeker' %}
+            <p>Discover intelligent tools designed to advance your career</p>
+            {% elif user.role == 'employer' %}
+            <p>Leverage AI to make smarter hiring decisions and grow your business</p>
+            {% endif %}
+          {% else %}
           <p>Harness the power of machine learning for smarter hiring and career decisions</p>
+          {% endif %}
         </div>
+        
+        {% if user.is_authenticated %}
+          {% if user.role == 'job_seeker' %}
+          <!-- Job Seeker Features -->
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <a href="{% url 'predictions:salary' %}" style="text-decoration: none; color: inherit;">
+                <div class="box text-center p-4" style="transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                  <i class="lni-wallet" style="font-size: 48px; color: #4c40ed;"></i>
+                  <h4 class="mt-3">Salary Prediction</h4>
+                  <p>Estimate your potential earnings based on skills and experience</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <a href="{% url 'predictions:remote_work' %}" style="text-decoration: none; color: inherit;">
+                <div class="box text-center p-4" style="transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                  <i class="lni-home" style="font-size: 48px; color: #4c40ed;"></i>
+                  <h4 class="mt-3">Remote Work Prediction</h4>
+                  <p>Discover if your profile matches remote work opportunities</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <a href="{% url 'predictions:health_insurance' %}" style="text-decoration: none; color: inherit;">
+                <div class="box text-center p-4" style="transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                  <i class="lni-heart" style="font-size: 48px; color: #4c40ed;"></i>
+                  <h4 class="mt-3">Health Insurance</h4>
+                  <p>Check health insurance eligibility for your career path</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          
+          {% elif user.role == 'employer' %}
+          <!-- Employer Features -->
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <a href="{% url 'predictions:campaign_conversion' %}" style="text-decoration: none; color: inherit;">
+                <div class="box text-center p-4" style="transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                  <i class="lni-bar-chart" style="font-size: 48px; color: #4c40ed;"></i>
+                  <h4 class="mt-3">Campaign Conversion</h4>
+                  <p>Predict marketing campaign success and conversion rates</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <a href="{% url 'predictions:degree_mention' %}" style="text-decoration: none; color: inherit;">
+                <div class="box text-center p-4" style="transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                  <i class="lni-graduation" style="font-size: 48px; color: #4c40ed;"></i>
+                  <h4 class="mt-3">Degree Requirement</h4>
+                  <p>Determine if degree should be required for job positions</p>
+                </div>
+              </a>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <a href="{% url 'jobs:my_jobs' %}" style="text-decoration: none; color: inherit;">
+                <div class="box text-center p-4" style="transition: all 0.3s; cursor: pointer;" onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'">
+                  <i class="lni-briefcase" style="font-size: 48px; color: #4c40ed;"></i>
+                  <h4 class="mt-3">Manage Jobs</h4>
+                  <p>Post and manage your job listings with AI insights</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          {% endif %}
+          
+        {% else %}
+        <!-- Guest User Features -->
         <div class="row">
           <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
             <div class="box text-center p-4">
@@ -187,32 +143,12 @@
             </div>
           </div>
         </div>
+        {% endif %}
       </div>
     </section>
     <!-- ML Features Section End -->
 
-    <!-- Browse jobs Section Start -->
-    <div id="browse-jobs" class="section bg-gray">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-6 col-md-12 col-sm-12">
-            <div class="text-wrapper">
-              <div>
-                <h3>Smart Job Matching</h3>
-                <p>Our ML algorithms analyze your skills, experience, and preferences to match you with the most suitable opportunities. Get personalized salary predictions and career recommendations.</p>
-                <a class="btn btn-common" href="{% url 'jobs:job_list' %}">Browse Jobs</a>
-              </div>
-            </div>
-          </div>
-           <div class="col-lg-6 col-md-12 col-sm-12">
-            <div class="img-thumb">
-              <img class="img-fluid" src="{% static 'img/search.png' %}" alt="">
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- Browse jobs Section End -->   
+   
 
     <!-- How It Work Section Start -->
     <section class="how-it-works section">
@@ -254,8 +190,135 @@
     </section>
     <!-- How It Work Section End -->
 
+    <!-- Why Us Section Start -->
+    <section id="why-us" class="section bg-gray">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">Why Choose Us?</h2>
+          {% if user.is_authenticated %}
+            {% if user.role == 'job_seeker' %}
+            <p>Your success is our mission - here's how we help you advance your career</p>
+            {% elif user.role == 'employer' %}
+            <p>Partner with us to build exceptional teams and grow your business</p>
+            {% endif %}
+          {% else %}
+          <p>The smart choice for connecting talent with opportunity</p>
+          {% endif %}
+        </div>
+        
+        {% if user.is_authenticated %}
+          {% if user.role == 'job_seeker' %}
+          <!-- Job Seeker Benefits -->
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                  <i class="lni-rocket" style="font-size: 32px; color: white;"></i>
+                </div>
+                <h4 class="mt-3">AI-Powered Matching</h4>
+                <p>Our machine learning algorithms analyze your skills and experience to recommend jobs that perfectly match your profile and career goals.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+                <div style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                  <i class="lni-wallet" style="font-size: 32px; color: white;"></i>
+                </div>
+                <h4 class="mt-3">Salary Insights</h4>
+                <p>Get accurate salary predictions based on your skills, experience, and market trends to negotiate better compensation packages.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+                <div style="background: linear-gradient(135deg, #4c6ef5 0%, #3b5bdb 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                  <i class="lni-home" style="font-size: 32px; color: white;"></i>
+                </div>
+                <h4 class="mt-3">Remote Work Options</h4>
+                <p>Discover remote work opportunities that match your lifestyle preferences with our remote work eligibility predictions.</p>
+              </div>
+            </div>
+          </div>
+          
+          {% elif user.role == 'employer' %}
+          <!-- Employer Benefits -->
+          <div class="row">
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                  <i class="lni-users" style="font-size: 32px; color: white;"></i>
+                </div>
+                <h4 class="mt-3">Quality Candidates</h4>
+                <p>Access a pool of pre-screened, qualified candidates matched to your specific job requirements using AI-powered algorithms.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+                <div style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                  <i class="lni-bar-chart" style="font-size: 32px; color: white;"></i>
+                </div>
+                <h4 class="mt-3">Business Analytics</h4>
+                <p>Leverage campaign conversion predictions and business growth insights to make data-driven hiring and marketing decisions.</p>
+              </div>
+            </div>
+            <div class="col-lg-4 col-md-6 col-xs-12 mb-4">
+              <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+                <div style="background: linear-gradient(135deg, #4c6ef5 0%, #3b5bdb 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                  <i class="lni-timer" style="font-size: 32px; color: white;"></i>
+                </div>
+                <h4 class="mt-3">Save Time & Resources</h4>
+                <p>Streamline your recruitment process with automated candidate matching and reduce time-to-hire significantly.</p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          
+        {% else %}
+        <!-- Guest User Benefits -->
+        <div class="row">
+          <div class="col-lg-3 col-md-6 col-xs-12 mb-4">
+            <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+              <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="lni-brain" style="font-size: 32px; color: white;"></i>
+              </div>
+              <h4 class="mt-3">AI-Powered</h4>
+              <p>Advanced machine learning algorithms for accurate predictions and smart matching.</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-xs-12 mb-4">
+            <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+              <div style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="lni-check-mark-circle" style="font-size: 32px; color: white;"></i>
+              </div>
+              <h4 class="mt-3">Verified Jobs</h4>
+              <p>All job listings are verified and approved to ensure quality opportunities.</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-xs-12 mb-4">
+            <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+              <div style="background: linear-gradient(135deg, #4c6ef5 0%, #3b5bdb 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="lni-lock" style="font-size: 32px; color: white;"></i>
+              </div>
+              <h4 class="mt-3">Secure & Private</h4>
+              <p>Your data is protected with industry-standard security measures.</p>
+            </div>
+          </div>
+          <div class="col-lg-3 col-md-6 col-xs-12 mb-4">
+            <div class="box text-center p-4" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); height: 100%;">
+              <div style="background: linear-gradient(135deg, #f59f00 0%, #f76707 100%); width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <i class="lni-support" style="font-size: 32px; color: white;"></i>
+              </div>
+              <h4 class="mt-3">24/7 Support</h4>
+              <p>Get help whenever you need it with our dedicated support team.</p>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+    <!-- Why Us Section End -->
+
     <!-- Latest Section Start -->
-    <section id="latest-jobs" class="section bg-gray">
+    <section id="latest-jobs" class="section">
       <div class="container">
         <div class="section-header">  
           <h2 class="section-title">Latest Jobs</h2>
@@ -264,25 +327,24 @@
         <div class="row">
           {% if latest_jobs %}
             {% for job in latest_jobs %}
-            <div class="col-lg-6 col-md-12 col-xs-12">
-              <div class="jobs-latest">
-                <div class="img-thumb">
-                  <img src="{% static 'img/features/img-1.jpg' %}" alt="">
-                </div>
-                <div class="content">
-                  <h3><a href="{% url 'jobs:job_detail' job.id %}">{{ job.title }}</a></h3>
-                  <p class="brand">{{ job.company.company_name }}</p>
-                  <div class="tags">  
+            <div class="col-lg-6 col-md-12 col-xs-12" style="display: flex; margin-bottom: 20px;">
+              <div class="jobs-latest" style="width: 100%; display: flex; flex-direction: column; min-height: 220px; max-height: 240px; padding: 20px;">
+                <div class="content" style="flex: 1; display: flex; flex-direction: column;">
+                  <h3 style="font-size: 20px; margin-bottom: 8px;"><a href="{% url 'jobs:job_detail' job.id %}" style="text-decoration: none; color: inherit;">{{ job.title }}</a></h3>
+                  <p class="brand" style="font-size: 14px; margin-bottom: 8px;">{{ job.company.company_name }}</p>
+                  <div class="tags" style="font-size: 13px;">  
                     <span><i class="lni-map-marker"></i> {{ job.location }}</span>  
                     <span><i class="lni-briefcase"></i> {{ job.get_applicants_count }} Applicants</span> 
                   </div>
                   {% if job.salary_range %}
-                  <div class="tag mb-3"><i class="lni-wallet"></i> {{ job.salary_range }}</div>
+                  <div class="tag mb-2" style="font-size: 13px;"><i class="lni-wallet"></i> {{ job.salary_range }}</div>
                   {% endif %}
-                  <span class="{% if job.job_type == 'full_time' %}full-time{% else %}part-time{% endif %}">{{ job.get_job_type_display }}</span>
-                  {% if job.remote_option %}
-                  <span class="badge badge-success ml-2">Remote</span>
-                  {% endif %}
+                  <div style="margin-top: auto;">
+                    <span class="{% if job.job_type == 'full_time' %}full-time{% else %}part-time{% endif %}" style="font-size: 12px;">{{ job.get_job_type_display }}</span>
+                    {% if job.remote_option %}
+                    <span class="badge badge-success ml-2" style="font-size: 11px;">Remote</span>
+                    {% endif %}
+                  </div>
                 </div>
               </div>
             </div>

@@ -498,20 +498,20 @@
       
       // Make the entire card clickable
       card.addEventListener('click', function(e) {
-        if (e.target.tagName !== 'BUTTON' && e.target.type !== 'submit') {
-          e.preventDefault();
-          e.stopPropagation();
+        // Don't interfere with the checkbox itself
+        if (e.target === checkbox) {
+          return;
         }
+        
+        // Toggle the checkbox
         checkbox.checked = !checkbox.checked;
         updateSkillDisplay();
       });
       
-      // Prevent label click from double-triggering
-      const label = card.querySelector('label');
-      if (label) {
-        label.addEventListener('click', function(e) {
-          e.preventDefault();
-          e.stopPropagation();
+      // Listen to checkbox change event for proper form handling
+      if (checkbox) {
+        checkbox.addEventListener('change', function() {
+          updateSkillDisplay();
         });
       }
     });

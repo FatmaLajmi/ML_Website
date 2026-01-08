@@ -64,6 +64,10 @@ def campaign_conversion_view(request):
                     messages.warning(request, f'Prediction completed but could not save: {str(e)}')
             elif 'error' in prediction_result:
                 messages.error(request, prediction_result['error'])
+        else:
+            # Form has validation errors
+            messages.error(request, 'Please fill in all required fields correctly.')
+            print("Form errors:", form.errors)
     else:
         form = CampaignConversionPredictionForm()
     
@@ -475,19 +479,24 @@ def remote_work_page(request):
 
         form = RemoteWorkPredictionForm(request.POST)
         if form.is_valid():
+            print("Form is valid, cleaned data:", form.cleaned_data)
             out = predict_remote_work(form.cleaned_data)
+            print("Prediction output:", out)
             if out.get("success"):
                 result = out
                 messages.success(request, f"Prediction: {out['prediction']} ({out['proba_remote_pct']}%)")
             else:
                 error = out.get("error", "Prediction failed")
                 messages.error(request, error)
+                print("Prediction error:", error)
         else:
             messages.error(request, "Please correct the form errors.")
+            print("Form validation errors:", form.errors)
     else:
         form = RemoteWorkPredictionForm()
 
     return render(request, "predictions/remote_work.html", {
+        "form": form,
         "result": result,
         "error": error,
         "form_data": form_data,

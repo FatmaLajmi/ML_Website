@@ -42,7 +42,7 @@ class CompanyGrowthPredictor:
                 
                 with open(features_path, 'rb') as f:
                     self.features = pickle.load(f)
-                print(f"✓ Company growth model loaded with {len(self.features)} features: {self.features}")
+                print(f"[OK] Company growth model loaded with {len(self.features)} features: {self.features}")
             else:
                 print(f"✗ Model files not found at {models_dir}")
                 if not pipeline_path.exists():

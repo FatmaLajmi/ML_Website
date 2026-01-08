@@ -32,7 +32,7 @@ class DegreeMentionPredictor:
                     self.model = pickle.load(f)
                 with open(features_path, 'rb') as f:
                     self.features = pickle.load(f)
-                print(f"✓ Degree mention model loaded with {len(self.features)} features: {self.features}")
+                print(f"[OK] Degree mention model loaded with {len(self.features)} features: {self.features}")
             else:
                 print(f"✗ Model files not found at {models_dir}")
         except Exception as e:

@@ -63,7 +63,7 @@ class XGBoostGrowthPredictor:
                 with open(features_path, 'rb') as f:
                     self.features = pickle.load(f)
                 
-                print(f"✓ XGBoost growth model loaded with {len(self.features)} features")
+                print(f"[OK] XGBoost growth model loaded with {len(self.features)} features")
                 # Extract state options from feature names
                 self.states = [f.replace('State_', '') for f in self.features if f.startswith('State_')]
                 print(f"  - Industries: {len(self.industries)} options")
