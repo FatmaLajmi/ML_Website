@@ -97,3 +97,44 @@ ml_models/models/
 
 
 *.joblib
+# ======================
+# Python / Django
+# ======================
+__pycache__/
+*.py[cod]
+*.log
+.env
+.env.*
+*.sqlite3
+db.sqlite3
+
+# ======================
+# Virtual environment
+# ======================
+.venv/
+venv/
+ENV/
+env/
+
+# ======================
+# ML models & artifacts
+# ======================
+*.pkl
+*.joblib
+*.h5
+*.onnx
+
+# ======================
+# Jupyter / experiments
+# ======================
+.ipynb_checkpoints/
+*.ipynb
+
+
+
+# ======================
+# Temporary files
+# ======================
+*.tmp
+*.bak
+*.swp

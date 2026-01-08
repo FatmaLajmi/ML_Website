@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from ml_models.predictors.campaign_conversion_predictor import campaign_conversion_predictor
+from ml_models.predictors.remote_work_predictor import predict_remote_work
+from ml_models.predictors.salary_predictor_regression import predict_salary
 from .forms import (
     CampaignConversionPredictionForm, SalaryPredictionForm, JobTitlePredictionForm, 
     RemoteWorkPredictionForm, DegreePredictionForm, BenefitsPredictionForm, 
@@ -456,3 +459,78 @@ def health_insurance_view(request):
         form = HealthInsuranceForm()
 
     return render(request, "predictions/health_insurance.html", {"form": form, "result": result})
+def remote_work_page(request):
+    result = None
+    error = None
+    form_data = {}
+
+    if request.method == "POST":
+        form_data = {
+            "job_title_short": request.POST.get("job_title_short", ""),
+            "job_country": request.POST.get("job_country", ""),
+            "job_schedule_type": request.POST.get("job_schedule_type", ""),
+            "job_seniority": request.POST.get("job_seniority", ""),
+            "text_block": request.POST.get("text_block", ""),
+        }
+
+        form = RemoteWorkPredictionForm(request.POST)
+        if form.is_valid():
+            out = predict_remote_work(form.cleaned_data)
+            if out.get("success"):
+                result = out
+                messages.success(request, f"Prediction: {out['prediction']} ({out['proba_remote_pct']}%)")
+            else:
+                error = out.get("error", "Prediction failed")
+                messages.error(request, error)
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = RemoteWorkPredictionForm()
+
+    return render(request, "predictions/remote_work.html", {
+        "result": result,
+        "error": error,
+        "form_data": form_data,
+    })
+
+
+@login_required
+def salary_prediction_page(request):
+    """Salary regression prediction page - accessible to job seekers and employers"""
+    result = None
+    error = None
+    
+    if request.method == "POST":
+        form = SalaryPredictionForm(request.POST)
+        if form.is_valid():
+            # Prepare input data
+            input_data = {
+                'job_title_short': form.cleaned_data['job_title_short'],
+                'job_country': form.cleaned_data['job_country'],
+                'job_state': form.cleaned_data.get('job_state', 'Unknown'),
+                'skills_text': form.cleaned_data['skills_text'],
+                'company_size': 'Medium',  # Default value
+            }
+            
+            # Make prediction
+            out = predict_salary(input_data)
+            if out.get('success'):
+                result = out
+                messages.success(
+                    request,
+                    f"Predicted Salary for {out['job_title'].title()}: {out['prediction']}"
+                )
+            else:
+                error = out.get('error', 'Prediction failed')
+                messages.error(request, error)
+        else:
+            messages.error(request, "Please correct the form errors.")
+    else:
+        form = SalaryPredictionForm()
+    
+    return render(request, "predictions/salary.html", {
+        "form": form,
+        "result": result,
+        "error": error,
+    })
+

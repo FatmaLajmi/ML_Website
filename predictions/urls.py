@@ -11,5 +11,6 @@ urlpatterns = [
     path('employers/', views.employer_predictions_view, name='employer_predictions'),
     path('campaign-conversion/', views.campaign_conversion_view, name='campaign_conversion'),
     path('degree-mention/', views.degree_mention_view, name='degree_mention'),
-    # path('employer-growth/', views.employer_growth_view, name='employer_growth'),  # Removed - now handled by modal
+    path("remote-work/", views.remote_work_page, name="remote_work"),
+    path("salary/", views.salary_prediction_page, name="salary"),    # path('employer-growth/', views.employer_growth_view, name='employer_growth'),  # Removed - now handled by modal
 ]
