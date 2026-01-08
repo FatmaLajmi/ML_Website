@@ -91,56 +91,32 @@
 
               <!-- Job Title Short -->
               <div class="form-group">
-                <label for="id_job_title_short">
-                  Job Title (Short) <span class="text-danger">*</span>
+                <label for="{{ form.job_title_short.id_for_label }}">
+                  Job Title <span class="text-danger">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="job_title_short"
-                  id="id_job_title_short"
-                  class="form-control"
-                  placeholder="e.g., data analyst"
-                  required
-                  value="{{ form_data.job_title_short|default:'' }}"
-                >
+                {{ form.job_title_short }}
                 <small class="form-text text-muted">
-                  A short standardized job title.
+                  Select the job title that best matches.
                 </small>
               </div>
 
               <!-- Country -->
               <div class="form-group">
-                <label for="id_job_country">
-                  Job Country <span class="text-danger">*</span>
+                <label for="{{ form.job_country.id_for_label }}">
+                  Country <span class="text-danger">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="job_country"
-                  id="id_job_country"
-                  class="form-control"
-                  placeholder="e.g., US, FR"
-                  required
-                  value="{{ form_data.job_country|default:'' }}"
-                >
+                {{ form.job_country }}
                 <small class="form-text text-muted">
-                  Country code or name depending on your training data.
+                  Country where the job is located.
                 </small>
               </div>
 
               <!-- Schedule Type -->
               <div class="form-group">
-                <label for="id_job_schedule_type">
+                <label for="{{ form.job_schedule_type.id_for_label }}">
                   Schedule Type <span class="text-danger">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="job_schedule_type"
-                  id="id_job_schedule_type"
-                  class="form-control"
-                  placeholder="e.g., Full-time, Part-time, Contractor"
-                  required
-                  value="{{ form_data.job_schedule_type|default:'' }}"
-                >
+                {{ form.job_schedule_type }}
                 <small class="form-text text-muted">
                   Contract type for the job posting.
                 </small>
@@ -148,18 +124,10 @@
 
               <!-- Seniority -->
               <div class="form-group">
-                <label for="id_job_seniority">
+                <label for="{{ form.job_seniority.id_for_label }}">
                   Seniority Level <span class="text-danger">*</span>
                 </label>
-                <input
-                  type="text"
-                  name="job_seniority"
-                  id="id_job_seniority"
-                  class="form-control"
-                  placeholder="e.g., Junior, Mid, Senior, Lead"
-                  required
-                  value="{{ form_data.job_seniority|default:'' }}"
-                >
+                {{ form.job_seniority }}
                 <small class="form-text text-muted">
                   The seniority level of the role.
                 </small>
@@ -167,17 +135,10 @@
 
               <!-- Text block -->
               <div class="form-group">
-                <label for="id_text_block">
+                <label for="{{ form.text_block.id_for_label }}">
                   Job Description (Text) <span class="text-danger">*</span>
                 </label>
-                <textarea
-                  name="text_block"
-                  id="id_text_block"
-                  class="form-control"
-                  rows="6"
-                  placeholder="Skills, missions, tools, responsibilities..."
-                  required
-                >{{ form_data.text_block|default:'' }}</textarea>
+                {{ form.text_block }}
                 <small class="form-text text-muted">
                   Paste a description or key skills; the model uses text signals.
                 </small>

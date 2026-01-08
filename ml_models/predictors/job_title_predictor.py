@@ -45,14 +45,14 @@ class JobTitlePredictor:
                     self.discriminative_skills = artifacts. get('discriminative_skills', [])
                     self.metadata = artifacts.get('model_metadata', {})
                     
-                print("✅ Job title classifier model loaded successfully")
+                print("[OK] Job title classifier model loaded successfully")
                 print(f"   Model type: {type(self.model)}")
                 print(f"   Vectorizer:  {type(self.vectorizer)}")
                 print(f"   Classes: {self.label_encoder.classes_}")
             else:
-                print(f"❌ Job title model not found at {model_path}")
+                print(f"[ERROR] Job title model not found at {model_path}")
         except Exception as e:
-            print(f"❌ Error loading job title model: {e}")
+            print(f"[ERROR] Error loading job title model: {e}")
             import traceback
             traceback.print_exc()
     
@@ -67,14 +67,14 @@ class JobTitlePredictor:
                 if disc_skills_path.exists():
                     with open(disc_skills_path, 'r') as f:
                         self.discriminative_skills = json.load(f)
-                    print(f"✓ Loaded {len(self. discriminative_skills)} discriminative skills")
+                    print(f"[OK] Loaded {len(self. discriminative_skills)} discriminative_skills")
             
             # Load feature engineering config
             feature_config_path = models_dir / 'feature_engineering_config.json'
             if feature_config_path.exists():
                 with open(feature_config_path, 'r') as f:
                     self.feature_config = json.load(f)
-                print(f"✓ Loaded feature engineering config")
+                print(f"[OK] Loaded feature engineering config")
             
             # Load model metadata (if not already loaded)
             if not self.metadata:
@@ -82,10 +82,10 @@ class JobTitlePredictor:
                 if metadata_path.exists():
                     with open(metadata_path, 'r') as f:
                         self.metadata = json.load(f)
-                    print(f"✓ Loaded model metadata - {self.metadata. get('n_classes', 0)} job classes")
+                    print(f"[OK] Loaded model metadata - {self.metadata. get('n_classes', 0)} job classes")
             
         except Exception as e:  
-            print(f"⚠️ Warning: Could not load config files: {e}")
+            print(f"[WARNING] Could not load config files: {e}")
     
     def _normalize_skill(self, skill):
         """Normalize skill name for matching"""
@@ -302,7 +302,7 @@ class JobTitlePredictor:
             # Combine TF-IDF + engineered features (like training!)
             X_final = hstack([X_vec, csr_matrix(X_add)])
             
-            print(f"✅ Final feature shape: {X_final.shape}")
+            print(f"[OK] Final feature shape: {X_final.shape}")
             
             # Make prediction
             prediction_encoded = self.model.predict(X_final)[0]

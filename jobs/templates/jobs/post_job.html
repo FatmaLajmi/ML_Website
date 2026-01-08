@@ -52,6 +52,37 @@
               <small class="form-text text-muted">Describe the role, responsibilities, and what you're looking for.</small>
             </div>
             
+            <div class="form-group">
+              <label for="{{ form.requirements.id_for_label }}">{{ form.requirements.label }}</label>
+              {{ form.requirements }}
+              {% if form.requirements.errors %}
+              <div class="invalid-feedback d-block">{{ form.requirements.errors }}</div>
+              {% endif %}
+              <small class="form-text text-muted">List the qualifications and requirements for this position.</small>
+            </div>
+            
+            <h4 class="mt-4 mb-3" style="color: #333; border-bottom: 2px solid #4c6ef5; padding-bottom: 10px; font-weight: 600;">Company Information</h4>
+            
+            <div class="form-group">
+              <label for="{{ form.company_description.id_for_label }}">{{ form.company_description.label }}</label>
+              {{ form.company_description }}
+              {% if form.company_description.errors %}
+              <div class="invalid-feedback d-block">{{ form.company_description.errors }}</div>
+              {% endif %}
+              <small class="form-text text-muted">Provide a brief description of your company to attract candidates.</small>
+            </div>
+            
+            <div class="form-group">
+              <label for="{{ form.company_website.id_for_label }}">{{ form.company_website.label }}</label>
+              {{ form.company_website }}
+              {% if form.company_website.errors %}
+              <div class="invalid-feedback d-block">{{ form.company_website.errors }}</div>
+              {% endif %}
+              <small class="form-text text-muted">Your company's website URL (optional).</small>
+            </div>
+            
+            <h4 class="mt-4 mb-3" style="color: #333; border-bottom: 2px solid #4c6ef5; padding-bottom: 10px; font-weight: 600;">Job Details</h4>
+            
             <div class="row">
               <div class="col-md-6">
                 <div class="form-group">
@@ -74,12 +105,57 @@
               </div>
             </div>
             
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.experience_level.id_for_label }}">{{ form.experience_level.label }}</label>
+                  {{ form.experience_level }}
+                  {% if form.experience_level.errors %}
+                  <div class="invalid-feedback d-block">{{ form.experience_level.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.education_level.id_for_label }}">{{ form.education_level.label }}</label>
+                  {{ form.education_level }}
+                  {% if form.education_level.errors %}
+                  <div class="invalid-feedback d-block">{{ form.education_level.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+            
             <div class="form-group">
-              <label for="{{ form.salary_range.id_for_label }}">{{ form.salary_range.label }}</label>
-              {{ form.salary_range }}
-              {% if form.salary_range.errors %}
-              <div class="invalid-feedback d-block">{{ form.salary_range.errors }}</div>
+              <label for="{{ form.skills_required.id_for_label }}">{{ form.skills_required.label }}</label>
+              {{ form.skills_required }}
+              {% if form.skills_required.errors %}
+              <div class="invalid-feedback d-block">{{ form.skills_required.errors }}</div>
               {% endif %}
+              <small class="form-text text-muted">Enter required skills separated by commas (e.g., Python, Django, JavaScript).</small>
+            </div>
+            
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.salary_range.id_for_label }}">{{ form.salary_range.label }}</label>
+                  {{ form.salary_range }}
+                  {% if form.salary_range.errors %}
+                  <div class="invalid-feedback d-block">{{ form.salary_range.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              
+              <div class="col-md-6">
+                <div class="form-group">
+                  <label for="{{ form.deadline.id_for_label }}">{{ form.deadline.label }}</label>
+                  {{ form.deadline }}
+                  {% if form.deadline.errors %}
+                  <div class="invalid-feedback d-block">{{ form.deadline.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
             </div>
             
             <div class="form-group">
