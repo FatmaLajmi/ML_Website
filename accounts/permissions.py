@@ -17,7 +17,7 @@ def role_required(allowed_roles):
             
             if request.user.role not in allowed_roles:
                 messages.error(request, 'You do not have permission to access this page.')
-                return redirect('accounts:page')
+                return redirect('home')
             
             return view_func(request, *args, **kwargs)
         return wrapper
